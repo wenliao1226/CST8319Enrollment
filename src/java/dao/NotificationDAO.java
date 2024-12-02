@@ -13,7 +13,7 @@ import java.util.List;
 
 public class NotificationDAO {
 
-    // 插入新通知
+
     public boolean addNotification(Notification notification) {
         String sql = "INSERT INTO notification (User_ID, Message, Date, Status) VALUES (?, ?, ?, ?)";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -29,7 +29,7 @@ public class NotificationDAO {
         return false;
     }
 
-    // 根据用户 ID 获取通知列表
+ 
     public List<Notification> getNotificationsByUserId(int userId) {
         List<Notification> notifications = new ArrayList<>();
         String sql = "SELECT * FROM notification WHERE User_ID = ?";
@@ -46,7 +46,7 @@ public class NotificationDAO {
         return notifications;
     }
 
-    // 获取所有通知
+ 
     public List<Notification> getAllNotifications() {
         List<Notification> notifications = new ArrayList<>();
         String sql = "SELECT * FROM notification";
@@ -62,7 +62,7 @@ public class NotificationDAO {
         return notifications;
     }
 
-    // 标记通知为已读
+
     public boolean markNotificationAsRead(int notificationId) {
         String sql = "UPDATE notification SET Status = 'Read' WHERE Notification_ID = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -75,7 +75,7 @@ public class NotificationDAO {
         return false;
     }
 
-    // 删除通知
+ 
     public boolean deleteNotification(int notificationId) {
         String sql = "DELETE FROM notification WHERE Notification_ID = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -88,7 +88,7 @@ public class NotificationDAO {
         return false;
     }
 
-    // 映射 ResultSet 到 Notification 对象
+ 
     private Notification mapNotification(ResultSet resultSet) throws SQLException {
         return new Notification(
                 resultSet.getInt("Notification_ID"),

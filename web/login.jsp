@@ -47,10 +47,10 @@
             text-decoration: underline;
         }
         .alert {
-            display: none; /* 默认隐藏错误信息 */
+            display: none; 
         }
         .alert.active {
-            display: block; /* 当有错误信息时显示 */
+            display: block; 
             color: #721c24;
             background-color: #f8d7da;
             border: 1px solid #f5c6cb;
@@ -66,7 +66,7 @@
         <div class="login-box text-center">
             <h1>Welcome to EnrolPro</h1>
             
-            <!-- 动态显示错误信息 -->
+            <!-- Dynamic display of error messages -->
             <div id="error-banner" class="alert"></div>
 
             <form id="login-form" action="/EnrollmentSystem/user" method="post">
@@ -92,26 +92,26 @@
 
     <!-- JavaScript -->
     <script>
-        // 动态处理后端传递的错误信息
+        // Dynamically handling error messages passed by the backend
         const errorMessage = '<%= request.getAttribute("error") != null ? ((String) request.getAttribute("error")).replaceAll("'", "\\'") : "" %>';
         if (errorMessage) {
             const errorBanner = document.getElementById('error-banner');
-            errorBanner.textContent = errorMessage; // 设置错误信息内容
-            errorBanner.classList.add('active'); // 显示错误框
+            errorBanner.textContent = errorMessage; // set error content
+            errorBanner.classList.add('active'); // show error
         }
 
-        // 表单前端校验
+        // Form front-end validation
         document.getElementById('login-form').addEventListener('submit', function(event) {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
 
             if (!username) {
                 alert('Username cannot be empty.');
-                event.preventDefault(); // 阻止表单提交
+                event.preventDefault(); 
             }
             if (!password) {
                 alert('Password cannot be empty.');
-                event.preventDefault(); // 阻止表单提交
+                event.preventDefault(); 
             }
         });
     </script>

@@ -48,7 +48,7 @@
             text-decoration: underline;
         }
         .error-banner {
-            display: none; /* 默认隐藏错误信息 */
+            display: none; 
             color: #721c24;
             background-color: #f8d7da;
             border: 1px solid #f5c6cb;
@@ -57,7 +57,7 @@
             border-radius: 5px;
         }
         .error-banner.active {
-            display: block; /* 当有错误信息时显示 */
+            display: block; 
         }
     </style>
 </head>

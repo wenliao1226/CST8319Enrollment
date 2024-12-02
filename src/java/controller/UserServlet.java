@@ -56,11 +56,11 @@ public class UserServlet extends HttpServlet {
                 response.sendRedirect("admin_dashboard.jsp");
             }
         } else {
-            // 登录失败，设置错误信息并转发到 login.jsp
+            // Login failed, set error message and forward to login.jsp
             request.setAttribute("error", "Invalid username or password.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
 
-            // 调试日志
+            // Debugging Log
             System.out.println("Login failed for username: " + username);
         }
     }
@@ -73,14 +73,14 @@ public class UserServlet extends HttpServlet {
         String firstName = request.getParameter("first-name");
         String lastName = request.getParameter("last-name");
 
-        // 验证邮箱格式
+        // verification email form
         if (!email.endsWith("@collegestudent.com") && !email.endsWith("@collegeadmin.com")) {
             request.setAttribute("error", "Invalid email domain. Use @collegestudent.com or @collegeadmin.com.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        // 验证密码强度
+        // verification password
         String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
         if (!password.matches(passwordRegex)) {
             request.setAttribute("error", "Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.");
@@ -88,17 +88,17 @@ public class UserServlet extends HttpServlet {
             return;
         }
 
-        // 根据邮箱类型设置用户类型
+        // set user type by email
         String userType = email.endsWith("@collegestudent.com") ? "Student" : "Admin";
 
-        // 构建用户对象
+        
         User newUser = new User(0, username, password, email, firstName, lastName, null, null, null, userType);
 
-        // 注册用户
+     
         boolean success = userService.registerUser(newUser);
 
         if (success) {
-            // 注册成功，直接跳转到对应的页面
+            
             request.getSession().setAttribute("user", newUser);
             if ("Student".equalsIgnoreCase(userType)) {
                 response.sendRedirect("dashboard.jsp");
@@ -106,7 +106,7 @@ public class UserServlet extends HttpServlet {
                 response.sendRedirect("admin_dashboard.jsp");
             }
         } else {
-            // 注册失败，返回错误信息
+          
             request.setAttribute("error", "Registration failed! Username or email might already exist.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }

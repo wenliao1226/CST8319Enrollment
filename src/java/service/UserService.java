@@ -14,7 +14,7 @@ public class UserService {
 
     // rester
     public boolean registerUser(User user) {
-        // 检查用户名或邮箱是否已存在
+    
         List<User> allUsers = userDAO.getAllUsers();
         for (User existingUser : allUsers) {
             if (existingUser.getUsername().equals(user.getUsername()) || existingUser.getEmail().equals(user.getEmail())) {

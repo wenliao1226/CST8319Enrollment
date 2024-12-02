@@ -13,7 +13,7 @@ import java.util.List;
 
 public class DepartmentDAO {
 
-    // 插入新部门
+
     public boolean addDepartment(Department department) {
         String sql = "INSERT INTO department (Name, Program) VALUES (?, ?)";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -27,7 +27,6 @@ public class DepartmentDAO {
         return false;
     }
 
-    // 根据 ID 获取部门信息
     public Department getDepartmentById(int departmentId) {
         String sql = "SELECT * FROM department WHERE Department_ID = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -43,7 +42,7 @@ public class DepartmentDAO {
         return null;
     }
 
-    // 获取所有部门
+    
     public List<Department> getAllDepartments() {
         List<Department> departments = new ArrayList<>();
         String sql = "SELECT * FROM department";
@@ -59,7 +58,7 @@ public class DepartmentDAO {
         return departments;
     }
 
-    // 更新部门信息
+
     public boolean updateDepartment(Department department) {
         String sql = "UPDATE department SET Name = ?, Program = ? WHERE Department_ID = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -74,7 +73,7 @@ public class DepartmentDAO {
         return false;
     }
 
-    // 删除部门
+  
     public boolean deleteDepartment(int departmentId) {
         String sql = "DELETE FROM department WHERE Department_ID = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -87,7 +86,7 @@ public class DepartmentDAO {
         return false;
     }
 
-    // 映射 ResultSet 到 Department 对象
+   
     private Department mapDepartment(ResultSet resultSet) throws SQLException {
         return new Department(
                 resultSet.getInt("Department_ID"),

@@ -20,13 +20,13 @@ public class DatabaseInsertTest {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            // 设置占位符的值
+         
             preparedStatement.setString(1, "test_user");
             preparedStatement.setString(2, "password123");
             preparedStatement.setString(3, "test_user@example.com");
             preparedStatement.setString(4, "Student");
 
-            // 执行插入
+     
             int rowsInserted = preparedStatement.executeUpdate();
 
             if (rowsInserted > 0) {

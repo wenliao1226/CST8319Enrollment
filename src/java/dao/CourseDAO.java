@@ -13,7 +13,7 @@ import java.util.List;
 
 public class CourseDAO {
 
-    // 插入新课程
+   
     public boolean addCourse(Course course) {
         String sql = "INSERT INTO course (Course_Name, Department_ID, Credits, Capacity, Instructor, Schedule, Location, Description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -35,7 +35,7 @@ public class CourseDAO {
     
     
 
-    // 根据 ID 获取课程
+
     public Course getCourseById(int courseId) {
         String sql = "SELECT * FROM course WHERE Course_ID = ?";
         try (Connection connection = DatabaseConnection.getConnection();

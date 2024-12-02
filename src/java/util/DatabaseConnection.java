@@ -11,9 +11,9 @@ public class DatabaseConnection {
 
     public static Connection getConnection() throws SQLException {
         try {
-            // 加载 MySQL 驱动
+         
             Class.forName("com.mysql.cj.jdbc.Driver");
-            // 返回数据库连接
+     
             return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

@@ -49,12 +49,12 @@ public class CourseServlet extends HttpServlet {
 
         try {
             if ("getAll".equalsIgnoreCase(action)) {
-                // 获取所有课程
+                // get all course
                 List<Course> courses = courseService.getAllCourses();
                 response.getWriter().write(new Gson().toJson(courses));
 
             } else if ("getById".equalsIgnoreCase(action)) {
-                // 根据 ID 获取课程
+                // get course by id
                 String courseIdParam = request.getParameter("courseId");
 
                 if (courseIdParam == null || courseIdParam.trim().isEmpty()) {
@@ -74,7 +74,7 @@ public class CourseServlet extends HttpServlet {
                 }
 
             } else if ("search".equalsIgnoreCase(action)) {
-                // 搜索课程
+                // serch course
                 String courseName = request.getParameter("courseName");
                 String courseID = request.getParameter("courseID");
                 String program = request.getParameter("program");
@@ -92,7 +92,7 @@ public class CourseServlet extends HttpServlet {
                 }
 
             } else {
-                // 无效的 action 参数
+                // Invalid action parameter
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().write("{\"message\": \"Invalid action specified\"}");
             }
