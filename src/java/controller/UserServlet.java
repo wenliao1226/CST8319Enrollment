@@ -15,17 +15,27 @@ public class UserServlet extends HttpServlet {
     private final UserService userService = new UserService();
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String action = request.getParameter("action");
 
-        if ("login".equalsIgnoreCase(action)) {
-            handleLogin(request, response);
-        } else if ("register".equalsIgnoreCase(action)) {
-            handleRegister(request, response);
-        } else {
-            response.getWriter().write("Invalid action specified");
-        }
+    if ("login".equalsIgnoreCase(action)) {
+        handleLogin(request, response);
+    } else if ("register".equalsIgnoreCase(action)) {
+        handleRegister(request, response);
+    } else if ("logout".equalsIgnoreCase(action)) {
+        handleLogout(request, response);
+    } else {
+        response.getWriter().write("Invalid action specified");
     }
+}
+
+private void handleLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    
+    request.getSession().invalidate();
+    
+    response.sendRedirect("login.jsp");
+}
+
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

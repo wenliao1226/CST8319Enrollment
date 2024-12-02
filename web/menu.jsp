@@ -21,6 +21,9 @@
                         <li class="nav-item"><a class="nav-link" href="dashboard.jsp">Dashboard</a></li>
                         <li class="nav-item"><a class="nav-link" href="profile.jsp">Profile</a></li>
                         <li class="nav-item"><a class="nav-link" href="contact_us.jsp">Contact Us</a></li>
+                        <li class="nav-item"><a class="nav-link" href="contact_us.jsp">Contact Us</a></li>
+                        <li class="nav-item"><a class="nav-link" href="login.jsp">Logout</a></li>
+                        </li>
                     </ul>
                 </div>
             </div>

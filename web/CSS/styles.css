@@ -1,0 +1,164 @@
+/* General Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    margin-top: 70px; /* Adjust for the navbar */
+}
+
+/* Navbar Styles */
+.navbar {
+    width: 100%;
+    background-color: #6c757d; /* Gray color matching bg-secondary */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.navbar-nav .nav-link {
+    color: white !important;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link:hover {
+    text-decoration: underline;
+}
+
+/* Page Containers */
+.login-container,
+.register-container,
+.profile-container,
+.contact-container,
+.dashboard-container,
+.logout-container{
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    max-width: 500px;
+    width: 100%;
+    margin-top: 100px;
+    text-align: center;
+}
+
+.dashboard-container {
+    max-width: 1200px; /* Larger width for the dashboard */
+}
+
+/* Headings */
+h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+/* Form Styles */
+.form-group label {
+    text-align: left;
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Buttons */
+button, .btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover, .btn:hover {
+    background-color: #0056b3;
+}
+
+.edit-profile-btn {
+    margin-top: 20px;
+}
+
+/* Profile Page Styles */
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-picture img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.profile-info p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Additional Link Styles */
+.register-link, .login-link {
+    font-size: 14px;
+    color: #777;
+}
+
+.register-link a, .login-link a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.register-link a:hover, .login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Dashboard Widgets */
+.dashboard-widgets {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.widget {
+    background-color: #007BFF;
+    color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.widget h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.widget p {
+    font-size: 14px;
+    color: #f0f0f0;
+}
