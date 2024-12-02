@@ -22,20 +22,10 @@ public class CourseService {
         return courseDAO.getCourseById(courseId);
     }
     
-    // 根据课程名字获取课程
-    public List<Course> getCoursesByName(String courseName) {
-        return courseDAO.getCoursesByName(courseName);
-    }
-
-    // 根据 program 获取课程
-    public List<Course> getCoursesByProgram(String program) {
-        return courseDAO.getCoursesByProgram(program);
-    }
-    
-        // 添加 searchCourses 方法，根据多个条件搜索课程
+    //get course information according by key words
     public List<Course> searchCourses(String courseName, String courseID, String program) {
-        return courseDAO.searchCourses(courseName, courseID, program);
-    }
+    return courseDAO.searchCourses(courseName, courseID, program);
+}
 
 
     // 获取所有课程

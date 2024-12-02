@@ -25,36 +25,6 @@ public class UserDAO {
         }
         return false;
     }
-    
-    public User getUserByUsernameAndPassword(String username, String password) {
-    String sql = "SELECT * FROM user WHERE username = ? AND password = ?";
-    try (Connection connection = DatabaseConnection.getConnection();
-         PreparedStatement statement = connection.prepareStatement(sql)) {
-
-        statement.setString(1, username);
-        statement.setString(2, password);
-
-        ResultSet resultSet = statement.executeQuery();
-        if (resultSet.next()) {
-            return new User(
-                resultSet.getInt("id"),
-                resultSet.getString("username"),
-                resultSet.getString("password"),
-                resultSet.getString("email"),
-                resultSet.getString("first_name"),
-                resultSet.getString("last_name"),
-                resultSet.getString("address"),
-                resultSet.getString("phone_number"),
-                resultSet.getDate("date_of_birth"),
-                resultSet.getString("type") // 确保获取用户类型
-            );
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return null;
-}
-
 
 
     public User authenticateUser(String username, String password) {

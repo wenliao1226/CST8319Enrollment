@@ -43,42 +43,68 @@ public class CourseServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
         try {
-            if ("getByName".equalsIgnoreCase(action)) {
-                // 根据课程名字获取课程
-                String courseName = request.getParameter("courseName");
-                if (courseName == null || courseName.trim().isEmpty()) {
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    response.getWriter().write("{\"message\": \"Course name is required\"}");
-                    return;
-                }
-                List<Course> courses = courseService.getCoursesByName(courseName.trim());
+            if ("getAll".equalsIgnoreCase(action)) {
+                // 获取所有课程
+                List<Course> courses = courseService.getAllCourses();
                 response.getWriter().write(new Gson().toJson(courses));
 
-            } else if ("getByProgram".equalsIgnoreCase(action)) {
-                // 根据 program 获取课程
-                String program = request.getParameter("program");
-                if (program == null || program.trim().isEmpty()) {
+            } else if ("getById".equalsIgnoreCase(action)) {
+                // 根据 ID 获取课程
+                String courseIdParam = request.getParameter("courseId");
+
+                if (courseIdParam == null || courseIdParam.trim().isEmpty()) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    response.getWriter().write("{\"message\": \"Program is required\"}");
+                    response.getWriter().write("{\"message\": \"Course ID is required\"}");
                     return;
                 }
-                List<Course> courses = courseService.getCoursesByProgram(program.trim());
-                response.getWriter().write(new Gson().toJson(courses));
+
+                int courseId = Integer.parseInt(courseIdParam);
+                Course course = courseService.getCourseById(courseId);
+
+                if (course != null) {
+                    response.getWriter().write(new Gson().toJson(course));
+                } else {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    response.getWriter().write("{\"message\": \"Course not found\"}");
+                }
+
+            } else if ("search".equalsIgnoreCase(action)) {
+                // 搜索课程
+                String courseName = request.getParameter("courseName");
+                String courseID = request.getParameter("courseID");
+                String program = request.getParameter("program");
+
+                List<Course> courses = courseService.searchCourses(
+                    courseName != null ? courseName.trim() : null,
+                    courseID != null ? courseID.trim() : null,
+                    program != null ? program.trim() : null
+                );
+
+                if (!courses.isEmpty()) {
+                    response.getWriter().write(new Gson().toJson(courses));
+                } else {
+                    response.getWriter().write("[]");
+                }
 
             } else {
                 // 无效的 action 参数
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().write("{\"message\": \"Invalid action specified\"}");
             }
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"message\": \"Invalid numerical input\"}");
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write("{\"message\": \"An unexpected error occurred\"}");
             e.printStackTrace();
         }
     }
+
 
 }

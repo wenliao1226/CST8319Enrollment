@@ -17,7 +17,7 @@ public class EnrollmentDAOTest {
         userDAO.registerUser(user);
 
         CourseDAO courseDAO = new CourseDAO();
-        Course course = new Course(1, "Test Course", 1, 3, 50, "Instructor", "MWF 9-10", "Room 101", "Test course description",null);
+        Course course = new Course(1, "Test Course", 1, 3, 50, "Instructor", "MWF 9-10", "Room 101", "Test course description");
         courseDAO.addCourse(course);
 
         // Test Enrollment

@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,30 +47,33 @@
         .login-link a:hover {
             text-decoration: underline;
         }
-        .alert {
-            margin-bottom: 20px;
+        .error-banner {
+            display: none; /* 默认隐藏错误信息 */
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        .error-banner.active {
+            display: block; /* 当有错误信息时显示 */
         }
     </style>
 </head>
 <body>
 
-    <!-- Show Error Message if Present -->
-    <% 
-        String error = request.getParameter("error");
-        if (error != null && !error.isEmpty()) { 
-    %>
-        <div class="alert alert-danger text-center" role="alert">
-            <%= error %>
-        </div>
-    <% 
-        } 
-    %>
-
     <!-- Register Page Content -->
     <div class="register-container">
         <div class="register-box text-center">
             <h1>Register for EnrolPro</h1>
-            <form id="register-form" action="/EnrollmentSystem/user?action=register" method="post">
+
+            <!-- Error Banner -->
+            <div id="error-banner" class="error-banner"></div>
+
+            <form id="register-form" action="/EnrollmentSystem/user" method="post">
+                <input type="hidden" name="action" value="register">
+
                 <div class="form-group">
                     <label for="first-name" class="sr-only">First Name</label>
                     <input type="text" class="form-control" id="first-name" name="first-name" placeholder="First Name" required>
@@ -102,17 +106,59 @@
 
                 <button type="submit" class="btn btn-primary mt-4">Sign Up</button>
             </form>
-
             <p class="login-link mt-3">Already have an account? <a href="login.jsp">Login here</a></p>
         </div>
     </div>
-
+    
     <!-- Include the footer -->
     <jsp:include page="footer.jsp" />
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Handle server-side error messages
+        const errorMessage = '<%= request.getAttribute("error") != null ? request.getAttribute("error") : "" %>';
+        if (errorMessage) {
+            const errorBanner = document.getElementById('error-banner');
+            errorBanner.textContent = errorMessage;
+            errorBanner.classList.add('active');
+        }
+
+        document.getElementById('register-form').addEventListener('submit', function(event) {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            // Email validation
+            const validDomains = ["@collegestudent.com", "@collegeadmin.com"];
+            if (!validDomains.some(domain => email.endsWith(domain))) {
+                const errorBanner = document.getElementById('error-banner');
+                errorBanner.textContent = 'Email must end with @collegestudent.com or @collegeadmin.com.';
+                errorBanner.classList.add('active');
+                event.preventDefault();
+                return;
+            }
+
+            // Password validation
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passwordRegex.test(password)) {
+                const errorBanner = document.getElementById('error-banner');
+                errorBanner.textContent = 'Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.';
+                errorBanner.classList.add('active');
+                event.preventDefault();
+                return;
+            }
+
+            // Confirm password validation
+            if (password !== confirmPassword) {
+                const errorBanner = document.getElementById('error-banner');
+                errorBanner.textContent = 'Passwords do not match.';
+                errorBanner.classList.add('active');
+                event.preventDefault();
+            }
+        });
+    </script>
 
 </body>
 </html>

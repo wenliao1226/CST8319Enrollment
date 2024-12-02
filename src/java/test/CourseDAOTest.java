@@ -8,7 +8,7 @@ public class CourseDAOTest {
         CourseDAO courseDAO = new CourseDAO();
 
         // Test adding a course
-        Course course = new Course(0, "Math 101", 1, 3, 30, "Dr. Smith", "MWF 10-11", "Room 101", "Basic math course",null);
+        Course course = new Course(0, "Math 101", 1, 3, 30, "Dr. Smith", "MWF 10-11", "Room 101", "Basic math course");
         boolean addCourseResult = courseDAO.addCourse(course);
         System.out.println("Add course result: " + addCourseResult);
 

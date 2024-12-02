@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package model;
 
 public class Course {
@@ -10,29 +14,31 @@ public class Course {
     private String schedule;       // Schedule
     private String location;       // Location
     private String description;    // Description
-    private String program;        // Program
+    private String program; 
 
     public Course() {}
 
-    public Course(int courseId, String courseName, int departmentId, int credits, int capacity, 
-                  String instructor, String schedule, String location, String description, String program) {
-        this.courseId = courseId;
-        this.courseName = courseName;
-        this.departmentId = departmentId;
-        this.credits = credits;
-        this.capacity = capacity;
-        this.instructor = instructor;
-        this.schedule = schedule;
-        this.location = location;
-        this.description = description;
-        this.program = program;
+public Course(int courseId, String courseName, int departmentId, int credits, int capacity, String instructor, String schedule, String location, String description, String program) {
+    this.courseId = courseId;
+    this.courseName = courseName;
+    this.departmentId = departmentId;
+    this.credits = credits;
+    this.capacity = capacity;
+    this.instructor = instructor; // 确保 instructor 是 String
+    this.schedule = schedule;
+    this.location = location;
+    this.description = description;
+    this.program = program;
+}
+
+
+
+    public Course(int courseId, String courseName, int departmentId, int credits, int capacity, String instructor, String schedule, String location, String description) {
+        this(courseId, courseName, departmentId, credits, capacity, instructor, schedule, location, description, null);
     }
 
-    public Course(int aInt, String string, int aInt0, int aInt1, String string0, String string1, String string2, String string3, String string4) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 
-    // Getters and Setters
+
     public int getCourseId() {
         return courseId;
     }
@@ -104,7 +110,7 @@ public class Course {
     public void setDescription(String description) {
         this.description = description;
     }
-
+    
     public String getProgram() {
         return program;
     }

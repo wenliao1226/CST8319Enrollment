@@ -17,7 +17,7 @@ public class CourseServiceTest {
         System.out.println("Add department result: " + (departmentResult ? "Success" : "Failed"));
 
         // Test adding a course
-        Course newCourse = new Course(0, "Math 101", 1, 3, 30, "Dr. Smith", "MWF 10-11", "Room 101", "Basic math course",null);
+        Course newCourse = new Course(0, "Math 101", 1, 3, 30, "Dr. Smith", "MWF 10-11", "Room 101", "Basic math course");
         boolean addCourseResult = courseService.addCourse(newCourse);
         System.out.println("Add course result: " + (addCourseResult ? "Success" : "Failed"));
 

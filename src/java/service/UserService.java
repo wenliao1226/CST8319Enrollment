@@ -14,21 +14,26 @@ public class UserService {
 
     // rester
     public boolean registerUser(User user) {
-        // check if user exist
-        User existingUser = userDAO.authenticateUser(user.getUsername(), user.getPassword());
-        if (existingUser != null) {
-            System.out.println("User already exists, registration failed");
-            return false;
+        // 检查用户名或邮箱是否已存在
+        List<User> allUsers = userDAO.getAllUsers();
+        for (User existingUser : allUsers) {
+            if (existingUser.getUsername().equals(user.getUsername()) || existingUser.getEmail().equals(user.getEmail())) {
+                System.out.println("User already exists: " + user.getUsername());
+                return false;
+            }
         }
         return userDAO.registerUser(user);
     }
 
+
     // login
     public User login(String username, String password) {
-    User user = userDAO.getUserByUsernameAndPassword(username, password);
-    return user; // 如果验证失败，返回 null；成功则返回完整用户对象
-}
-
+        User user = userDAO.authenticateUser(username, password);
+        if (user == null) {
+            System.out.println("Login failure:Wrong username or password");
+        }
+        return user;
+    }
 
     // get all users
     public List<User> getAllUsers() {
