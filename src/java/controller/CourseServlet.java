@@ -25,7 +25,7 @@ public class CourseServlet extends HttpServlet {
 
         if ("add".equals(action)) {
             String name = request.getParameter("courseName");
-            int departmentId = Integer.parseInt(request.getParameter("departmentId"));
+            int programId = Integer.parseInt(request.getParameter("programId"));
             int credits = Integer.parseInt(request.getParameter("credits"));
             int capacity = Integer.parseInt(request.getParameter("capacity"));
             String instructor = request.getParameter("instructor");
@@ -33,7 +33,7 @@ public class CourseServlet extends HttpServlet {
             String location = request.getParameter("location");
             String description = request.getParameter("description");
 
-            Course course = new Course(0, name, departmentId, credits, capacity, instructor, schedule, location, description, null);
+            Course course = new Course(0, name, programId, credits, capacity, instructor, schedule, location, description, null);
 
             boolean success = courseService.addCourse(course);
             response.getWriter().write(success ? "Course added successfully" : "Failed to add course");

@@ -7,7 +7,7 @@ package model;
 public class Course {
     private int courseId;          // Course_ID
     private String courseName;     // Course_Name
-    private int departmentId;      // Department_ID
+    private int programId;         // programId;
     private int credits;           // Credits
     private int capacity;          // Capacity
     private String instructor;     // Instructor
@@ -18,10 +18,10 @@ public class Course {
 
     public Course() {}
 
-public Course(int courseId, String courseName, int departmentId, int credits, int capacity, String instructor, String schedule, String location, String description, String program) {
+public Course(int courseId, String courseName, int programId, int credits, int capacity, String instructor, String schedule, String location, String description, String program) {
     this.courseId = courseId;
     this.courseName = courseName;
-    this.departmentId = departmentId;
+    this.programId = programId;
     this.credits = credits;
     this.capacity = capacity;
     this.instructor = instructor; // 确保 instructor 是 String
@@ -33,8 +33,8 @@ public Course(int courseId, String courseName, int departmentId, int credits, in
 
 
 
-    public Course(int courseId, String courseName, int departmentId, int credits, int capacity, String instructor, String schedule, String location, String description) {
-        this(courseId, courseName, departmentId, credits, capacity, instructor, schedule, location, description, null);
+    public Course(int courseId, String courseName, int programId, int credits, int capacity, String instructor, String schedule, String location, String description) {
+        this(courseId, courseName, programId, credits, capacity, instructor, schedule, location, description, null);
     }
 
 
@@ -55,12 +55,12 @@ public Course(int courseId, String courseName, int departmentId, int credits, in
         this.courseName = courseName;
     }
 
-    public int getDepartmentId() {
-        return departmentId;
+    public int getProgramId() {
+        return programId;
     }
 
-    public void setDepartmentId(int departmentId) {
-        this.departmentId = departmentId;
+    public void setProgramId(int programId) {
+        this.programId = programId;
     }
 
     public int getCredits() {

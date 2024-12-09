@@ -15,11 +15,11 @@ public class CourseDAO {
 
    
     public boolean addCourse(Course course) {
-        String sql = "INSERT INTO course (Course_Name, Department_ID, Credits, Capacity, Instructor, Schedule, Location, Description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO course (Course_Name, Pogram_ID, Credits, Capacity, Instructor, Schedule, Location, Description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, course.getCourseName());
-            statement.setInt(2, course.getDepartmentId());
+            statement.setInt(2, course.getProgramId());
             statement.setInt(3, course.getCredits());
             statement.setInt(4, course.getCapacity());
             statement.setString(5, course.getInstructor());
@@ -58,7 +58,7 @@ public class CourseDAO {
     return new Course(
         resultSet.getInt("Course_ID"),
         resultSet.getString("Course_Name"),
-        resultSet.getInt("Department_ID"),
+        resultSet.getInt("Program_ID"),
         resultSet.getInt("Credits"),
         resultSet.getInt("Capacity"),
         resultSet.getString("Instructor"),
