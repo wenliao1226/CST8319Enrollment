@@ -13,6 +13,7 @@
 
     <!-- Dashboard Page Content -->
     <div class="container my-5">
+        <h2 class="text-center">Hi <%= request.getAttribute("userName") %>, welcome to EnrolPro!</h2>
         <h1 class="text-center">Student Dashboard</h1>
         
         <!-- Search Courses Section -->
@@ -29,11 +30,7 @@
                     <label for="courseID">Course ID</label>
                     <input type="text" class="form-control" id="courseID" name="courseID" placeholder="Enter Course ID">
                 </div>
-                <!-- Date Filter -->
-                <div class="form-group col-md-2">
-                    <label for="date">Date</label>
-                    <input type="date" class="form-control" id="date" name="date">
-                </div>
+                
                 <!-- Program Filter -->
                 <div class="form-group col-md-3">
                     <label for="program">Program</label>
@@ -44,6 +41,39 @@
                     <button type="submit" class="btn btn-primary w-100">Search</button>
                 </div>
             </form>
+        </section>
+        
+        <!-- Search Results Section -->
+        <section class="search-results my-4">
+            <h2>Search Results</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Course ID</th>
+                            <th>Course Name</th>
+                            <th>Capacity</th>
+                            <th>Schedule</th>
+                            <th>Program</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example Search Result Row (To be dynamically generated based on search results) -->
+                        <tr>
+                            <td>202</td>
+                            <td>Data Structures</td>
+                            <td>40</td>
+                            <td>Tue and Thu 2:00 PM - 4:00 PM</td>
+                            <td>Computer Science</td>
+                            <td>
+                                <button class="btn btn-success btn-sm" onclick="enrollCourse(202)">Enroll</button>
+                            </td>
+                        </tr>
+                        <!-- Repeat rows for each search result -->
+                    </tbody>
+                </table>
+            </div>
         </section>
         
         <!-- Current Enrollments Section -->
@@ -88,7 +118,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        // JavaScript functions to handle Update and Delete actions
+        // JavaScript functions to handle Update, Delete, and Enroll actions
         function updateCourse(courseId) {
             // Code to handle updating the course (e.g., open update form)
             alert("Update functionality for Course ID " + courseId);
@@ -100,6 +130,11 @@
                 // Logic to delete the course enrollment
                 alert("Course ID " + courseId + " deleted.");
             }
+        }
+
+        function enrollCourse(courseId) {
+            // Code to handle enrolling in the course
+            alert("Enroll functionality for Course ID " + courseId);
         }
     </script>
 </body>

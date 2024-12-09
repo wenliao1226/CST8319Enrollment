@@ -34,6 +34,18 @@
                         <label for="capacity">Capacity</label>
                         <input type="number" class="form-control" id="capacity" name="capacity" required>
                     </div>
+                    <div class="form-group col-md-4">
+                        <label for="programName">Program Name</label>
+                        <input type="text" class="form-control" id="programName" name="programName" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="Instructor">Instructor</label>
+                        <input type="text" class="form-control" id="instructor" name="instructor" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="Location">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" required>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-success">Add Course</button>
             </form>
@@ -49,6 +61,8 @@
                             <th>Course ID</th>
                             <th>Course Name</th>
                             <th>Capacity</th>
+                            <th>Schedule</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -58,6 +72,8 @@
                                 <td>${course.id}</td>
                                 <td>${course.name}</td>
                                 <td>${course.capacity}</td>
+                                <td>${course.schedule }</td>
+                                <td>${course.status }</td>
                                 <td>
                                     <button class="btn btn-warning btn-sm update-course" data-id="${course.id}" data-name="${course.name}" data-capacity="${course.capacity}">Update</button>
                                     <form action="DeleteCourseServlet" method="post" style="display:inline;">
