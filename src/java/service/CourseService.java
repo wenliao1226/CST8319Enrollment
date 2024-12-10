@@ -17,6 +17,10 @@ public class CourseService {
         return courseDAO.addCourse(course);
     }
     
+        public boolean updateCourse(Course course) {
+        return courseDAO.updateCourse(course);
+    }
+    
     public boolean isDuplicateCourse(int courseId, String courseName) {
     return courseDAO.isDuplicateCourse(courseId, courseName);
 }

@@ -22,10 +22,12 @@ public class CourseServlet extends HttpServlet {
 @Override
 protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String action = request.getParameter("action");
-    if ("add".equals(action)) {
-        String message = null;
-        String messageType = null;
-        try {
+    String message = null;
+    String messageType = null;
+
+    try {
+        if ("add".equals(action)) {
+            // 添加课程逻辑
             int courseId = Integer.parseInt(request.getParameter("courseId"));
             String courseName = request.getParameter("courseName");
             int programId = Integer.parseInt(request.getParameter("programId"));
@@ -43,38 +45,76 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
                 message = "Failed to add course.";
                 messageType = "error";
             }
-        } catch (NumberFormatException e) {
-            message = "Invalid input.";
+
+        } else if ("update".equals(action)) {
+            // 更新课程逻辑
+            int courseId = Integer.parseInt(request.getParameter("courseId")); // 新的 Course ID
+            String courseName = request.getParameter("courseName");
+            int programId = Integer.parseInt(request.getParameter("programId"));
+            int capacity = Integer.parseInt(request.getParameter("capacity"));
+            String instructor = request.getParameter("instructor");
+            String location = request.getParameter("location");
+
+            Course course = new Course(courseId, courseName, programId, capacity, instructor, "", location, "");
+            boolean success = courseService.updateCourse(course);
+
+            if (success) {
+                message = "Course updated successfully.";
+                messageType = "success";
+            } else {
+                message = "Failed to update course.";
+                messageType = "error";
+            }
+
+        } else if ("delete".equals(action)) {
+            // 删除课程逻辑
+            int courseId = Integer.parseInt(request.getParameter("courseId"));
+            boolean success = courseService.deleteCourse(courseId);
+
+            if (success) {
+                message = "Course deleted successfully.";
+                messageType = "success";
+            } else {
+                message = "Failed to delete course.";
+                messageType = "error";
+            }
+        } else {
+            message = "Invalid action.";
             messageType = "error";
         }
-
-        // 仅在有消息需要显示时设置请求属性
-        if (message != null) {
-            request.setAttribute("message", message);
-            request.setAttribute("messageType", messageType);
-        }
-
-        // 转发请求回到当前页面
-        request.getRequestDispatcher("/admin_dashboard.jsp").forward(request, response);
+    } catch (NumberFormatException e) {
+        message = "Invalid input.";
+        messageType = "error";
+    } catch (Exception e) {
+        message = "An unexpected error occurred: " + e.getMessage();
+        messageType = "error";
+        e.printStackTrace();
     }
-}
 
+    // 设置消息并转发请求
+    if (message != null) {
+        request.setAttribute("message", message);
+        request.setAttribute("messageType", messageType);
+    }
+
+    request.getRequestDispatcher("/admin_dashboard.jsp").forward(request, response);
+}
 
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
 
         if ("getAll".equals(action)) {
             List<Course> courses = courseService.getAllCourses();
-            System.out.println("Courses fetched in doGet: " + courses.size()); // 调试信息
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            // 将课程记录转换为 JSON 并发送到前端
             response.getWriter().write(new Gson().toJson(courses));
         }
-        
-        
     }
 
-
 }
+

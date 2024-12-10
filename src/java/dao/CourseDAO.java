@@ -4,12 +4,16 @@
  */
 package dao;
 
+import java.io.IOException;
 import model.Course;
 import util.DatabaseConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class CourseDAO {
 
@@ -97,32 +101,60 @@ public class CourseDAO {
 
     public List<Course> getAllCourses() {
         List<Course> courses = new ArrayList<>();
-        String sql = "SELECT c.Course_ID, c.Course_Name, c.Capacity, c.Instructor, c.Location, p.Program_Name " +
+        String sql = "SELECT c.Course_ID, c.Course_Name, c.Program_ID, c.Capacity, c.Instructor, " +
+                     "c.Location, p.Program_Name " +
                      "FROM course c " +
-                     "LEFT JOIN program p ON c.Program_ID = p.Program_ID";
+                     "LEFT JOIN program p ON c.Program_ID = p.Program_ID " +
+                     "ORDER BY c.Course_ID ASC";
+
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
+
             while (resultSet.next()) {
-                courses.add(new Course(
-                    resultSet.getInt("Course_ID"),
-                    resultSet.getString("Course_Name"),
-                    0, // Program_ID 如果需要可从数据库结果中获取
-                    resultSet.getInt("Capacity"),
-                    resultSet.getString("Instructor"),
-                    "", // Schedule 如果需要可从数据库结果中获取
-                    resultSet.getString("Location"),
-                    "", // Description 如果需要可从数据库结果中获取
-                    resultSet.getString("Program_Name") // Program_Name
-                ));
+                Course course = new Course();
+                course.setCourseId(resultSet.getInt("Course_ID"));
+                course.setCourseName(resultSet.getString("Course_Name"));
+                course.setProgramId(resultSet.getInt("Program_ID"));
+                course.setCapacity(resultSet.getInt("Capacity"));
+                course.setInstructor(resultSet.getString("Instructor"));
+                course.setLocation(resultSet.getString("Location"));
+                course.setProgram(resultSet.getString("Program_Name")); // Program_Name from JOIN
+                courses.add(course);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return courses;
     }
 
 
+    
+    public boolean updateCourse(Course course) {
+    String sql = "UPDATE course SET " +
+                 "Course_ID = ?, Course_Name = ?, Program_ID = ?, Capacity = ?, " +
+                 "Instructor = ?, Location = ? " +
+                 "WHERE Course_ID = ?";
+    try (Connection connection = DatabaseConnection.getConnection();
+         PreparedStatement statement = connection.prepareStatement(sql)) {
+        statement.setInt(1, course.getCourseId()); // 新的 Course ID
+        statement.setString(2, course.getCourseName());
+        statement.setInt(3, course.getProgramId());
+        statement.setInt(4, course.getCapacity());
+        statement.setString(5, course.getInstructor());
+        statement.setString(6, course.getLocation());
+        statement.setInt(7, course.getCourseId()); // 原始 Course ID
+
+        return statement.executeUpdate() > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
+    
+    
 
 
     public boolean deleteCourse(int courseId) {

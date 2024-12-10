@@ -21,12 +21,11 @@
         <!-- Add Course Section -->
         <section class="mb-5">
             <h2>Add Course</h2>
-            <form id="add-course-form" action="/EnrollmentSystem/course" method="post">
-                <input type="hidden" name="action" value="add">
+            <form id="add-course-form" action="AddCourseServlet" method="post">
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="courseID">Course ID</label>
-                        <input type="text" class="form-control" id="courseID" name="courseId" required>
+                        <input type="text" class="form-control" id="courseID" name="courseID" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="courseName">Course Name</label>
@@ -53,15 +52,11 @@
                     </div>
                 </div>
                 <button type="submit" class="btn btn-success">Add Course</button>
-                <div id="alert-message" class="alert mt-3 ${messageType == 'success' ? 'alert-success' : 'alert-danger'}" style="${empty message ? 'display:none;' : ''}">
-                    ${message}
-                </div>
-
             </form>
-
         </section>
 
         <!-- Update/Delete Courses Section -->
+        <!-- Manage Courses Section -->
         <section>
             <h2>Manage Courses</h2>
             <div class="table-responsive">
@@ -71,27 +66,39 @@
                             <th>Course ID</th>
                             <th>Course Name</th>
                             <th>Capacity</th>
-                            <th>Schedule</th>
-                            <th>Status</th>
+                            <th>Program Name</th>
+                            <th>Instructor</th>
+                            <th>Location</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Example row of Courses -->
+                        <!-- 动态加载课程信息 -->
+                        <c:forEach var="course" items="${courses}">
                             <tr>
-                                <td>${course.id}</td>
-                                <td>${course.name}</td>
+                                <td>${course.courseId}</td>
+                                <td>${course.courseName}</td>
                                 <td>${course.capacity}</td>
-                                <td>${course.schedule }</td>
-                                <td>${course.status }</td>
+                                <td>${course.programName}</td>
+                                <td>${course.instructor}</td>
+                                <td>${course.location}</td>
                                 <td>
-                                    <button class="btn btn-warning btn-sm update-course" data-id="${course.id}" data-name="${course.name}" data-capacity="${course.capacity}">Update</button>
+                                    <button class="btn btn-warning btn-sm update-course" 
+                                            data-id="${course.courseId}" 
+                                            data-name="${course.courseName}" 
+                                            data-capacity="${course.capacity}" 
+                                            data-program="${course.programName}" 
+                                            data-instructor="${course.instructor}" 
+                                            data-location="${course.location}">
+                                        Update
+                                    </button>
                                     <form action="DeleteCourseServlet" method="post" style="display:inline;">
-                                        <input type="hidden" name="courseID" value="${course.id}">
+                                        <input type="hidden" name="courseID" value="${course.courseId}">
                                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                     </form>
                                 </td>
                             </tr>
+                        </c:forEach>
                     </tbody>
                 </table>
             </div>
@@ -110,7 +117,10 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" id="updateCourseID" name="courseID">
+                        <div class="form-group">
+                            <label for="updateCourseID">Course ID</label>
+                            <input type="text" class="form-control" id="updateCourseID" name="courseID" readonly>
+                        </div>
                         <div class="form-group">
                             <label for="updateCourseName">Course Name</label>
                             <input type="text" class="form-control" id="updateCourseName" name="courseName" required>
@@ -118,6 +128,20 @@
                         <div class="form-group">
                             <label for="updateCapacity">Capacity</label>
                             <input type="number" class="form-control" id="updateCapacity" name="capacity" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="updateProgramId">Program Name</label>
+                            <select class="form-control" id="updateProgramId" name="programId" required>
+                                <!-- 动态加载选项 -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="updateInstructor">Instructor</label>
+                            <input type="text" class="form-control" id="updateInstructor" name="instructor" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="updateLocation">Location</label>
+                            <input type="text" class="form-control" id="updateLocation" name="location" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -128,6 +152,7 @@
             </div>
         </div>
     </div>
+
     
     <!-- Include the footer -->
     <jsp:include page="footer.jsp" />
@@ -159,35 +184,37 @@
             }
         });
     </script>
-    
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const alertMessage = document.getElementById("alert-message");
-            if (alertMessage && alertMessage.style.display !== "none") {
-                setTimeout(() => {
-                    alertMessage.style.display = "none";
-                }, 3000); // 3000毫秒 = 3秒
-            }
-        });
-    </script>
-
-    
-    
-    
-    
 
     <script>
         $(document).on('click', '.update-course', function() {
             const id = $(this).data('id');
             const name = $(this).data('name');
             const capacity = $(this).data('capacity');
-            
+            const program = $(this).data('program');
+            const instructor = $(this).data('instructor');
+            const location = $(this).data('location');
+
+            // 填充更新表单字段
             $('#updateCourseID').val(id);
             $('#updateCourseName').val(name);
             $('#updateCapacity').val(capacity);
-            
+            $('#updateProgramId').val(program);
+            $('#updateInstructor').val(instructor);
+            $('#updateLocation').val(location);
+
+            // 加载Program Name选项
+            const programSelect = $('#updateProgramId');
+            programSelect.empty(); // 清空选项
+            $('#programId option').each(function() {
+                const value = $(this).val();
+                const text = $(this).text();
+                const isSelected = program === text ? 'selected' : '';
+                programSelect.append(`<option value="${value}" ${isSelected}>${text}</option>`);
+            });
+
             $('#updateCourseModal').modal('show');
         });
+
     </script>
 </body>
 </html>
