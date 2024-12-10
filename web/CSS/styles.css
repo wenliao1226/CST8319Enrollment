@@ -40,8 +40,7 @@ body {
 .register-container,
 .profile-container,
 .contact-container,
-.dashboard-container,
-.logout-container{
+.dashboard-container {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);

@@ -14,14 +14,15 @@ import java.util.List;
 public class ProgramDAO {
     public List<Program> getAllPrograms() {
         List<Program> programs = new ArrayList<>();
-        String sql = "SELECT * FROM program";
-        try (Connection connection = DatabaseConnection.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
-            while (resultSet.next()) {
+        String query = "SELECT Program_ID, Program_Name FROM program"; // 确保字段名称与数据库一致
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
                 programs.add(new Program(
-                    resultSet.getInt("Program_ID"),
-                    resultSet.getString("Name")
+                    rs.getInt("Program_ID"),      // 数据库中的列名为Program_ID
+                    rs.getString("Program_Name") // 数据库中的列名为Program_Name
                 ));
             }
         } catch (SQLException e) {

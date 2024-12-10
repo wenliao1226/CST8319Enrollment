@@ -19,91 +19,68 @@ import javax.servlet.annotation.WebServlet;
 public class CourseServlet extends HttpServlet {
     private CourseService courseService = new CourseService();
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
+@Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    // 打印收到的参数
+    System.out.println("=== Received Parameters ===");
+    System.out.println("Action: " + request.getParameter("action"));
+    System.out.println("Course ID: " + request.getParameter("courseId"));
+    System.out.println("Course Name: " + request.getParameter("courseName"));
+    System.out.println("Program ID: " + request.getParameter("programId"));
+    System.out.println("Capacity: " + request.getParameter("capacity"));
+    System.out.println("Instructor: " + request.getParameter("instructor"));
+    System.out.println("Location: " + request.getParameter("location"));
+    System.out.println("===========================");
 
-        if ("add".equals(action)) {
-            String name = request.getParameter("courseName");
+    // 继续处理逻辑
+    String action = request.getParameter("action");
+    if ("add".equals(action)) {
+    int courseId = Integer.parseInt(request.getParameter("courseId"));
+    String courseName = request.getParameter("courseName");
+
+    // 检查重复记录
+    if (courseService.isDuplicateCourse(courseId, courseName)) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.getWriter().write("Course ID or Name already exists.");
+        return;
+    }
+        try {
             int programId = Integer.parseInt(request.getParameter("programId"));
-            int credits = Integer.parseInt(request.getParameter("credits"));
             int capacity = Integer.parseInt(request.getParameter("capacity"));
             String instructor = request.getParameter("instructor");
-            String schedule = request.getParameter("schedule");
             String location = request.getParameter("location");
-            String description = request.getParameter("description");
 
-            Course course = new Course(0, name, programId, credits, capacity, instructor, schedule, location, description, null);
-
+            Course course = new Course(courseId, courseName, programId, capacity, instructor, "", location, "");
             boolean success = courseService.addCourse(course);
-            response.getWriter().write(success ? "Course added successfully" : "Failed to add course");
+
+            if (success) {
+                response.getWriter().write("Course added successfully.");
+            } else {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("Failed to add course.");
+            }
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid numerical input: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("Invalid input.");
         }
     }
+}
+
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        try {
-            if ("getAll".equalsIgnoreCase(action)) {
-                // get all course
-                List<Course> courses = courseService.getAllCourses();
-                response.getWriter().write(new Gson().toJson(courses));
-
-            } else if ("getById".equalsIgnoreCase(action)) {
-                // get course by id
-                String courseIdParam = request.getParameter("courseId");
-
-                if (courseIdParam == null || courseIdParam.trim().isEmpty()) {
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    response.getWriter().write("{\"message\": \"Course ID is required\"}");
-                    return;
-                }
-
-                int courseId = Integer.parseInt(courseIdParam);
-                Course course = courseService.getCourseById(courseId);
-
-                if (course != null) {
-                    response.getWriter().write(new Gson().toJson(course));
-                } else {
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    response.getWriter().write("{\"message\": \"Course not found\"}");
-                }
-
-            } else if ("search".equalsIgnoreCase(action)) {
-                // serch course
-                String courseName = request.getParameter("courseName");
-                String courseID = request.getParameter("courseID");
-                String program = request.getParameter("program");
-
-                List<Course> courses = courseService.searchCourses(
-                    courseName != null ? courseName.trim() : null,
-                    courseID != null ? courseID.trim() : null,
-                    program != null ? program.trim() : null
-                );
-
-                if (!courses.isEmpty()) {
-                    response.getWriter().write(new Gson().toJson(courses));
-                } else {
-                    response.getWriter().write("[]");
-                }
-
-            } else {
-                // Invalid action parameter
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"message\": \"Invalid action specified\"}");
-            }
-        } catch (NumberFormatException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"message\": \"Invalid numerical input\"}");
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"message\": \"An unexpected error occurred\"}");
-            e.printStackTrace();
+        if ("getAll".equals(action)) {
+            List<Course> courses = courseService.getAllCourses();
+            System.out.println("Courses fetched in doGet: " + courses.size()); // 调试信息
+            response.getWriter().write(new Gson().toJson(courses));
         }
+        
+        
     }
 
 

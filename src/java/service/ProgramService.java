@@ -19,6 +19,6 @@ public class ProgramService {
     private ProgramDAO programDAO = new ProgramDAO();
 
     public List<Program> getAllPrograms() {
-        return programDAO.getAllPrograms();
+        return programDAO.getAllPrograms(); // 从DAO层获取数据
     }
 }

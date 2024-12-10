@@ -9,29 +9,19 @@ package model;
  * @author wenli
  */
 public class Program {
-    private int programId;
-    private String name;
+    private int programId;          // 对应Program_ID
+    private String programName;     // 对应Program_Name
 
-    public Program() {}
-
-    public Program(int programId, String name) {
+    public Program(int programId, String programName) {
         this.programId = programId;
-        this.name = name;
+        this.programName = programName;
     }
 
     public int getProgramId() {
         return programId;
     }
 
-    public void setProgramId(int programId) {
-        this.programId = programId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public String getProgramName() {
+        return programName;
     }
 }

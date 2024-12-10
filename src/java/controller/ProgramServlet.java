@@ -26,9 +26,11 @@ public class ProgramServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Program> programs = programService.getAllPrograms();
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(new Gson().toJson(programs));
+
+        List<Program> programs = programService.getAllPrograms();
+        Gson gson = new Gson();
+        response.getWriter().write(gson.toJson(programs)); // 将Program列表转换为JSON格式
     }
 }

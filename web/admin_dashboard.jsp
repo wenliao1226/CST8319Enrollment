@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - EnrolPro</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="CSS/style.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 <body>
 
@@ -20,11 +21,12 @@
         <!-- Add Course Section -->
         <section class="mb-5">
             <h2>Add Course</h2>
-            <form id="add-course-form" action="AddCourseServlet" method="post">
+            <form id="add-course-form" action="/EnrollmentSystem/course" method="post">
+                <input type="hidden" name="action" value="add">
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="courseID">Course ID</label>
-                        <input type="text" class="form-control" id="courseID" name="courseID" required>
+                        <input type="text" class="form-control" id="courseID" name="courseId" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="courseName">Course Name</label>
@@ -35,8 +37,11 @@
                         <input type="number" class="form-control" id="capacity" name="capacity" required>
                     </div>
                     <div class="form-group col-md-4">
-                        <label for="programName">Program Name</label>
-                        <input type="text" class="form-control" id="programName" name="programName" required>
+                        <label for="programId">Program Name</label>
+                        <select class="form-control" id="programId" name="programId" required>
+                            <option value="">Select a Program</option>
+                            <!-- 动态加载选项 -->
+                        </select>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="Instructor">Instructor</label>
@@ -49,6 +54,7 @@
                 </div>
                 <button type="submit" class="btn btn-success">Add Course</button>
             </form>
+
         </section>
 
         <!-- Update/Delete Courses Section -->
@@ -123,11 +129,33 @@
     <jsp:include page="footer.jsp" />
 
     <!-- Bootstrap and JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <!-- Modal Interaction -->
+    <script>
+        document.addEventListener("DOMContentLoaded", async function() {
+            try {
+                const response = await fetch("http://localhost:8080/EnrollmentSystem/program");
+                const programs = await response.json();
+                console.log("Programs via Fetch API:", programs);
+
+                const programSelect = document.getElementById("programId");
+                programSelect.innerHTML = '<option value="">Select a Program</option>';
+                programs.forEach(program => {
+                    const option = document.createElement("option");
+                    option.value = program.programId;
+                    option.textContent = program.programName;
+                    programSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Failed to load programs via Fetch API:", error);
+                alert("Failed to load programs. Please try again later.");
+            }
+        });
+    </script>
+
     <script>
         $(document).on('click', '.update-course', function() {
             const id = $(this).data('id');

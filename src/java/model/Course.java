@@ -17,6 +17,18 @@ public class Course {
     private String program; 
 
     public Course() {}
+    
+    public Course(int courseId, String courseName, int programId, int capacity, String instructor, String schedule, String location, String description) {
+    this.courseId = courseId;
+    this.courseName = courseName;
+    this.programId = programId;
+    this.capacity = capacity;
+    this.instructor = instructor;
+    this.schedule = schedule;
+    this.location = location;
+    this.description = description;
+}
+
 
 public Course(int courseId, String courseName, int programId, int credits, int capacity, String instructor, String schedule, String location, String description, String program) {
     this.courseId = courseId;
@@ -36,6 +48,19 @@ public Course(int courseId, String courseName, int programId, int credits, int c
     public Course(int courseId, String courseName, int programId, int credits, int capacity, String instructor, String schedule, String location, String description) {
         this(courseId, courseName, programId, credits, capacity, instructor, schedule, location, description, null);
     }
+
+public Course(int courseId, String courseName, int programId, int capacity, String instructor, String schedule, String location, String description, String program) {
+    this.courseId = courseId;
+    this.courseName = courseName;
+    this.programId = programId;
+    this.capacity = capacity;
+    this.instructor = instructor;
+    this.schedule = schedule;
+    this.location = location;
+    this.description = description;
+    this.program = program; 
+}
+
 
 
 
