@@ -53,6 +53,10 @@
                     </div>
                 </div>
                 <button type="submit" class="btn btn-success">Add Course</button>
+                <div id="alert-message" class="alert mt-3 ${messageType == 'success' ? 'alert-success' : 'alert-danger'}" style="${empty message ? 'display:none;' : ''}">
+                    ${message}
+                </div>
+
             </form>
 
         </section>
@@ -155,6 +159,22 @@
             }
         });
     </script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const alertMessage = document.getElementById("alert-message");
+            if (alertMessage && alertMessage.style.display !== "none") {
+                setTimeout(() => {
+                    alertMessage.style.display = "none";
+                }, 3000); // 3000毫秒 = 3秒
+            }
+        });
+    </script>
+
+    
+    
+    
+    
 
     <script>
         $(document).on('click', '.update-course', function() {

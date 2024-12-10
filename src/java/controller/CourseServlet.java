@@ -21,30 +21,13 @@ public class CourseServlet extends HttpServlet {
 
 @Override
 protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    // 打印收到的参数
-    System.out.println("=== Received Parameters ===");
-    System.out.println("Action: " + request.getParameter("action"));
-    System.out.println("Course ID: " + request.getParameter("courseId"));
-    System.out.println("Course Name: " + request.getParameter("courseName"));
-    System.out.println("Program ID: " + request.getParameter("programId"));
-    System.out.println("Capacity: " + request.getParameter("capacity"));
-    System.out.println("Instructor: " + request.getParameter("instructor"));
-    System.out.println("Location: " + request.getParameter("location"));
-    System.out.println("===========================");
-
-    // 继续处理逻辑
     String action = request.getParameter("action");
     if ("add".equals(action)) {
-    int courseId = Integer.parseInt(request.getParameter("courseId"));
-    String courseName = request.getParameter("courseName");
-
-    // 检查重复记录
-    if (courseService.isDuplicateCourse(courseId, courseName)) {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        response.getWriter().write("Course ID or Name already exists.");
-        return;
-    }
+        String message = null;
+        String messageType = null;
         try {
+            int courseId = Integer.parseInt(request.getParameter("courseId"));
+            String courseName = request.getParameter("courseName");
             int programId = Integer.parseInt(request.getParameter("programId"));
             int capacity = Integer.parseInt(request.getParameter("capacity"));
             String instructor = request.getParameter("instructor");
@@ -54,18 +37,28 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             boolean success = courseService.addCourse(course);
 
             if (success) {
-                response.getWriter().write("Course added successfully.");
+                message = "Course added successfully.";
+                messageType = "success";
             } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write("Failed to add course.");
+                message = "Failed to add course.";
+                messageType = "error";
             }
         } catch (NumberFormatException e) {
-            System.err.println("Invalid numerical input: " + e.getMessage());
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Invalid input.");
+            message = "Invalid input.";
+            messageType = "error";
         }
+
+        // 仅在有消息需要显示时设置请求属性
+        if (message != null) {
+            request.setAttribute("message", message);
+            request.setAttribute("messageType", messageType);
+        }
+
+        // 转发请求回到当前页面
+        request.getRequestDispatcher("/admin_dashboard.jsp").forward(request, response);
     }
 }
+
 
 
     @Override

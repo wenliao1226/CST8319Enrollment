@@ -19,24 +19,25 @@ public class CourseDAO {
         return false; // 重复记录
     }
 
-    String sql = "INSERT INTO course (Course_Name, Program_ID, Credits, Capacity, Instructor, Schedule, Location, Description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO course (Course_ID, Course_Name, Program_ID, Credits, Capacity, Instructor, Schedule, Location, Description) " +
+             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     try (Connection connection = DatabaseConnection.getConnection();
          PreparedStatement statement = connection.prepareStatement(sql)) {
-        statement.setString(1, course.getCourseName());
-        statement.setInt(2, course.getProgramId());
-        statement.setInt(3, course.getCredits());
-        statement.setInt(4, course.getCapacity());
-        statement.setString(5, course.getInstructor());
-        statement.setString(6, course.getSchedule());
-        statement.setString(7, course.getLocation());
-        statement.setString(8, course.getDescription());
+        statement.setInt(1, course.getCourseId()); // 插入自定义的 Course_ID
+        statement.setString(2, course.getCourseName());
+        statement.setInt(3, course.getProgramId());
+        statement.setInt(4, course.getCredits());
+        statement.setInt(5, course.getCapacity());
+        statement.setString(6, course.getInstructor());
+        statement.setString(7, course.getSchedule());
+        statement.setString(8, course.getLocation());
+        statement.setString(9, course.getDescription());
         return statement.executeUpdate() > 0;
     } catch (SQLException e) {
         e.printStackTrace();
+        return false;
     }
-    return false;
-}
-
+    }
     
 
 
