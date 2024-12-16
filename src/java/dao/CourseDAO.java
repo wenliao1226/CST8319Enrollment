@@ -100,35 +100,34 @@ public class CourseDAO {
     }
 
     public List<Course> getAllCourses() {
-        List<Course> courses = new ArrayList<>();
-        String sql = "SELECT c.Course_ID, c.Course_Name, c.Program_ID, c.Capacity, c.Instructor, " +
-                     "c.Location, p.Program_Name " +
-                     "FROM course c " +
-                     "LEFT JOIN program p ON c.Program_ID = p.Program_ID " +
-                     "ORDER BY c.Course_ID ASC";
+    List<Course> courses = new ArrayList<>();
+    String sql = "SELECT c.Course_ID, c.Course_Name, c.Program_ID, c.Credits, c.Capacity, " +
+                 "c.Instructor, c.Schedule, c.Location, c.Description, p.Program_Name " +
+                 "FROM course c " +
+                 "LEFT JOIN program p ON c.Program_ID = p.Program_ID " +
+                 "ORDER BY c.Course_ID ASC";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
+    try (Connection connection = DatabaseConnection.getConnection();
+         PreparedStatement statement = connection.prepareStatement(sql);
+         ResultSet resultSet = statement.executeQuery()) {
 
-            while (resultSet.next()) {
-                Course course = new Course();
-                course.setCourseId(resultSet.getInt("Course_ID"));
-                course.setCourseName(resultSet.getString("Course_Name"));
-                course.setProgramId(resultSet.getInt("Program_ID"));
-                course.setCapacity(resultSet.getInt("Capacity"));
-                course.setInstructor(resultSet.getString("Instructor"));
-                course.setLocation(resultSet.getString("Location"));
-                course.setProgram(resultSet.getString("Program_Name")); // Program_Name from JOIN
-                courses.add(course);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        while (resultSet.next()) {
+            Course course = new Course();
+            course.setCourseId(resultSet.getInt("Course_ID"));
+            course.setCourseName(resultSet.getString("Course_Name"));
+            course.setProgramId(resultSet.getInt("Program_ID"));
+            course.setCapacity(resultSet.getInt("Capacity"));
+            course.setInstructor(resultSet.getString("Instructor"));
+            course.setLocation(resultSet.getString("Location"));
+            course.setProgram(resultSet.getString("Program_Name")); // 从 JOIN 获取 Program_Name
+            courses.add(course);
         }
-
-        return courses;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
 
+    return courses;
+}
 
     
     public boolean updateCourse(Course course) {

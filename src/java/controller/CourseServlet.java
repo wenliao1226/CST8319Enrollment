@@ -103,18 +103,12 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
+        List<Course> courses = courseService.getAllCourses(); 
 
-        if ("getAll".equals(action)) {
-            List<Course> courses = courseService.getAllCourses();
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-
-            // 将课程记录转换为 JSON 并发送到前端
-            response.getWriter().write(new Gson().toJson(courses));
-        }
+        response.getWriter().write(new Gson().toJson(courses));
     }
-
 }
 

@@ -42,6 +42,30 @@ public class UserDAO {
         }
         return null;
     }
+    
+    public boolean updateUser(User user) {
+    String sql = "UPDATE user SET Username = ?, Password = ?, Email = ?, First_Name = ?, Last_Name = ?, Address = ?, Phone_Number = ?, Date_of_Birth = ? WHERE User_ID = ?";
+    try (Connection connection = DatabaseConnection.getConnection();
+         PreparedStatement statement = connection.prepareStatement(sql)) {
+        statement.setString(1, user.getUsername());
+        statement.setString(2, user.getPassword());
+        statement.setString(3, user.getEmail());
+        statement.setString(4, user.getFirstName());
+        statement.setString(5, user.getLastName());
+        statement.setString(6, user.getAddress());
+        statement.setString(7, user.getPhoneNumber());
+        statement.setDate(8, user.getDateOfBirth() != null ? new java.sql.Date(user.getDateOfBirth().getTime()) : null);
+        statement.setInt(9, user.getUserId());
+        int rowsUpdated = statement.executeUpdate();
+        System.out.println("Rows updated: " + rowsUpdated);
+        return rowsUpdated > 0;
+    } catch (SQLException e) {
+        System.out.println("SQL error during user update: " + e.getMessage());
+        e.printStackTrace();
+    }
+    return false;
+}
+
 
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();

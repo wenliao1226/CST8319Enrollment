@@ -119,7 +119,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="updateCourseID">Course ID</label>
-                            <input type="text" class="form-control" id="updateCourseID" name="courseID" readonly>
+                            <input type="text" class="form-control" id="updateCourseID" name="courseID" required>
                         </div>
                         <div class="form-group">
                             <label for="updateCourseName">Course Name</label>
@@ -164,54 +164,97 @@
 
     <!-- Modal Interaction -->
     <script>
-        document.addEventListener("DOMContentLoaded", async function() {
-            try {
-                const response = await fetch("http://localhost:8080/EnrollmentSystem/program");
-                const programs = await response.json();
-                console.log("Programs via Fetch API:", programs);
-
-                const programSelect = document.getElementById("programId");
-                programSelect.innerHTML = '<option value="">Select a Program</option>';
-                programs.forEach(program => {
-                    const option = document.createElement("option");
-                    option.value = program.programId;
-                    option.textContent = program.programName;
-                    programSelect.appendChild(option);
-                });
-            } catch (error) {
-                console.error("Failed to load programs via Fetch API:", error);
-                alert("Failed to load programs. Please try again later.");
+    document.addEventListener("DOMContentLoaded", async function () {
+        // 加载 program 数据
+        try {
+            const programResponse = await fetch("http://localhost:8080/EnrollmentSystem/program");
+            if (!programResponse.ok) {
+                console.error("Failed to fetch programs:", programResponse.statusText);
+                return;
             }
-        });
-    </script>
 
-    <script>
+            const programs = await programResponse.json();
+            console.log("Programs via Fetch API:", programs);
+
+            // 填充 Program 下拉菜单
+            const programSelect = document.getElementById("programId");
+            programSelect.innerHTML = '<option value="">Select a Program</option>';
+            programs.forEach(program => {
+                const option = document.createElement("option");
+                option.value = program.programId;
+                option.textContent = program.programName;
+                programSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Failed to load programs via Fetch API:", error);
+            alert("Failed to load programs. Please try again later.");
+        }
+        
+          });
+       </script>
+        
+ <script>
+document.addEventListener("DOMContentLoaded", async function () {
+        // 加载 course 数据
+        try {
+            const courseResponse = await fetch("http://localhost:8080/EnrollmentSystem/course?action=getAll");
+            if (!courseResponse.ok) {
+                console.error("Failed to fetch courses:", courseResponse.statusText);
+                return;
+            }
+
+            const courses = await courseResponse.json();
+            console.log("Courses via Fetch API:", courses);
+
+            // 填充 Course 表格
+            const tableBody = document.querySelector("table tbody");
+            tableBody.innerHTML = ""; // 清空表格内容
+            courses.forEach(course => {
+                const row = `
+                    <tr>
+                        <td>${course.courseId}</td>
+                        <td>${course.courseName}</td>
+                        <td>${course.capacity}</td>
+                        <td>${course.program}</td>
+                        <td>${course.instructor}</td>
+                        <td>${course.location}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm update-course"
+                                    data-id="${course.courseId}"
+                                    data-name="${course.courseName}"
+                                    data-capacity="${course.capacity}"
+                                    data-program="${course.program}"
+                                    data-instructor="${course.instructor}"
+                                    data-location="${course.location}">
+                                Update
+                            </button>
+                            <form action="DeleteCourseServlet" method="post" style="display:inline;">
+                                <input type="hidden" name="courseID" value="${course.courseId}">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML("beforeend", row);
+            });
+        } catch (error) {
+            console.error("Error loading courses:", error);
+        }
+    });
+       </script>
+       
+       
+    
+        <script>
         $(document).on('click', '.update-course', function() {
             const id = $(this).data('id');
             const name = $(this).data('name');
             const capacity = $(this).data('capacity');
-            const program = $(this).data('program');
-            const instructor = $(this).data('instructor');
-            const location = $(this).data('location');
-
-            // 填充更新表单字段
+            
             $('#updateCourseID').val(id);
             $('#updateCourseName').val(name);
             $('#updateCapacity').val(capacity);
-            $('#updateProgramId').val(program);
-            $('#updateInstructor').val(instructor);
-            $('#updateLocation').val(location);
-
-            // 加载Program Name选项
-            const programSelect = $('#updateProgramId');
-            programSelect.empty(); // 清空选项
-            $('#programId option').each(function() {
-                const value = $(this).val();
-                const text = $(this).text();
-                const isSelected = program === text ? 'selected' : '';
-                programSelect.append(`<option value="${value}" ${isSelected}>${text}</option>`);
-            });
-
+            
             $('#updateCourseModal').modal('show');
         });
 

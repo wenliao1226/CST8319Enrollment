@@ -34,6 +34,11 @@ public class UserService {
         }
         return user;
     }
+    
+    public boolean updateUser(User user) {
+    return userDAO.updateUser(user);
+}
+
 
     // get all users
     public List<User> getAllUsers() {

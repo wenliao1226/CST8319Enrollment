@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
+import javax.servlet.http.HttpSession;
 
 @WebServlet("/user")
 public class UserServlet extends HttpServlet {
@@ -24,9 +26,11 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
         handleRegister(request, response);
     } else if ("logout".equalsIgnoreCase(action)) {
         handleLogout(request, response);
+    } else if ("update".equalsIgnoreCase(action)) {
+    handleUpdateUser(request, response);
     } else {
-        response.getWriter().write("Invalid action specified");
-    }
+            response.getWriter().write("Invalid action specified");
+        }
 }
 
 private void handleLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -39,15 +43,14 @@ private void handleLogout(HttpServletRequest request, HttpServletResponse respon
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
+        HttpSession session = request.getSession(false);
 
-        if ("getAll".equalsIgnoreCase(action)) {
-            response.getWriter().write(userService.getAllUsers().toString());
-        } else if ("getById".equalsIgnoreCase(action)) {
-            int userId = Integer.parseInt(request.getParameter("userId"));
-            response.getWriter().write(userService.getUserById(userId).toString());
+        if (session != null && session.getAttribute("user") != null) {
+            User user = (User) session.getAttribute("user");
+            request.setAttribute("userName", user.getUsername()); 
+            request.getRequestDispatcher("dashboard.jsp").forward(request, response);
         } else {
-            response.getWriter().write("Invalid action specified");
+            response.sendRedirect("login.jsp"); 
         }
     }
 
@@ -59,6 +62,7 @@ private void handleLogout(HttpServletRequest request, HttpServletResponse respon
 
         if (user != null) {
             request.getSession().setAttribute("user", user);
+            request.getSession().setAttribute("userName", user.getUsername());
 
             if ("Student".equalsIgnoreCase(user.getType())) {
                 response.sendRedirect("dashboard.jsp");
@@ -121,6 +125,51 @@ private void handleLogout(HttpServletRequest request, HttpServletResponse respon
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
     }
+    
+    private void handleUpdateUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    try {
+        int userId = Integer.parseInt(request.getParameter("userId"));
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String email = request.getParameter("email");
+        String firstName = request.getParameter("firstName");
+        String lastName = request.getParameter("lastName");
+        String address = request.getParameter("address");
+        String phoneNumber = request.getParameter("phoneNumber");
+        Date dateOfBirth = null;
 
+        try {
+            String dob = request.getParameter("dateOfBirth");
+            if (dob != null && !dob.isEmpty()) {
+                dateOfBirth = java.sql.Date.valueOf(dob);
+            }
+        } catch (IllegalArgumentException e) {
+            request.setAttribute("error", "Invalid date format");
+            request.getRequestDispatcher("profile.jsp").forward(request, response);
+            return;
+        }
+
+        User user = new User(userId, username, password, email, firstName, lastName, address, phoneNumber, dateOfBirth, null);
+
+        boolean success = userService.updateUser(user);
+
+        if (success) {
+            
+            request.getSession().setAttribute("user", user);
+            System.out.println("User updated successfully: " + user);
+            response.sendRedirect("profile.jsp");
+        } else {
+           
+            request.setAttribute("error", "Update failed. Please try again.");
+            System.out.println("Update failed for user: " + user);
+            request.getRequestDispatcher("profile.jsp").forward(request, response);
+        }
+    } catch (Exception e) {
+        System.out.println("Error occurred while updating user: " + e.getMessage());
+        e.printStackTrace();
+        request.setAttribute("error", "An error occurred. Please try again.");
+        request.getRequestDispatcher("profile.jsp").forward(request, response);
+    }
+}
 
 }

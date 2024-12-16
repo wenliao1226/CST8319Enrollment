@@ -13,7 +13,7 @@
 
     <!-- Dashboard Page Content -->
     <div class="container my-5">
-        <h2 class="text-center">Hi <%= request.getAttribute("userName") %>, welcome to EnrolPro!</h2>
+        <h2 class="text-center">Hi <%= session.getAttribute("userName") %>, welcome to EnrolPro!</h2>
         <h1 class="text-center">Student Dashboard</h1>
         
         <!-- Search Courses Section -->
