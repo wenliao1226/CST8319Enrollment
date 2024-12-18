@@ -9,48 +9,44 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
-import javax.servlet.http.HttpSession;
 
 @WebServlet("/user")
 public class UserServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private final UserService userService = new UserService();
 
     @Override
-protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String action = request.getParameter("action");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
 
-    if ("login".equalsIgnoreCase(action)) {
-        handleLogin(request, response);
-    } else if ("register".equalsIgnoreCase(action)) {
-        handleRegister(request, response);
-    } else if ("logout".equalsIgnoreCase(action)) {
-        handleLogout(request, response);
-    } else if ("update".equalsIgnoreCase(action)) {
-    handleUpdateUser(request, response);
-    } else {
+        System.out.println("Action received: " + action); // Debug: print action type
+
+        if ("login".equalsIgnoreCase(action)) {
+            handleLogin(request, response);
+        } else if ("register".equalsIgnoreCase(action)) {
+            handleRegister(request, response);
+        } else if ("logout".equalsIgnoreCase(action)) {
+            handleLogout(request, response);
+        } else if ("updatePassword".equalsIgnoreCase(action)) { // Add missing updatePassword action
+            handleUpdatePassword(request, response);
+        } else {
             response.getWriter().write("Invalid action specified");
         }
-}
-
-private void handleLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    
-    request.getSession().invalidate();
-    
-    response.sendRedirect("login.jsp");
-}
-
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
+        String action = request.getParameter("action");
 
-        if (session != null && session.getAttribute("user") != null) {
-            User user = (User) session.getAttribute("user");
-            request.setAttribute("userName", user.getUsername()); 
-            request.getRequestDispatcher("dashboard.jsp").forward(request, response);
+        System.out.println("GET request received: Action = " + action);
+
+        if ("getAll".equalsIgnoreCase(action)) {
+            response.getWriter().write(userService.getAllUsers().toString());
+        } else if ("getById".equalsIgnoreCase(action)) {
+            int userId = Integer.parseInt(request.getParameter("userId"));
+            response.getWriter().write(userService.getUserById(userId).toString());
         } else {
-            response.sendRedirect("login.jsp"); 
+            response.getWriter().write("Invalid action specified");
         }
     }
 
@@ -58,27 +54,53 @@ private void handleLogout(HttpServletRequest request, HttpServletResponse respon
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
+        System.out.println("Login attempt - Username: " + username + ", Password: " + password);
+
         User user = userService.login(username, password);
 
         if (user != null) {
+            System.out.println("Login successful for user: " + username);
             request.getSession().setAttribute("user", user);
-            request.getSession().setAttribute("userName", user.getUsername());
 
             if ("Student".equalsIgnoreCase(user.getType())) {
-                response.sendRedirect("dashboard.jsp");
+                response.sendRedirect(request.getContextPath() + "/dashboard.jsp");
             } else if ("Admin".equalsIgnoreCase(user.getType())) {
-                response.sendRedirect("admin_dashboard.jsp");
+                response.sendRedirect(request.getContextPath() + "/admin_dashboard.jsp");
             }
         } else {
-            // Login failed, set error message and forward to login.jsp
+            System.out.println("Login failed for username: " + username);
             request.setAttribute("error", "Invalid username or password.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
-
-            // Debugging Log
-            System.out.println("Login failed for username: " + username);
         }
     }
 
+    private void handleUpdatePassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        User user = (User) request.getSession().getAttribute("user");
+
+        if (user != null) {
+            String currentPassword = request.getParameter("currentPassword");
+            String newPassword = request.getParameter("newPassword");
+            String confirmNewPassword = request.getParameter("confirmNewPassword");
+
+            // Check if new passwords match
+            if (!newPassword.equals(confirmNewPassword)) {
+                request.setAttribute("error", "New passwords do not match.");
+                request.getRequestDispatcher("profile.jsp").forward(request, response);
+                return;
+            }
+
+            boolean success = userService.updatePassword(user.getUserId(), currentPassword, newPassword);
+
+            if (success) {
+                request.setAttribute("message", "Password updated successfully.");
+            } else {
+                request.setAttribute("error", "Failed to update password. Please check your current password.");
+            }
+            request.getRequestDispatcher("profile.jsp").forward(request, response);
+        } else {
+            response.sendRedirect("login.jsp");
+        }
+    }
 
     private void handleRegister(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("username");
@@ -87,89 +109,51 @@ private void handleLogout(HttpServletRequest request, HttpServletResponse respon
         String firstName = request.getParameter("first-name");
         String lastName = request.getParameter("last-name");
 
-        // verification email form
+        System.out.println("Register attempt - Username: " + username + ", Email: " + email);
+
+        // Email validation
         if (!email.endsWith("@collegestudent.com") && !email.endsWith("@collegeadmin.com")) {
+            System.out.println("Invalid email domain: " + email);
             request.setAttribute("error", "Invalid email domain. Use @collegestudent.com or @collegeadmin.com.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        // verification password
+        // Password validation
         String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
-        if (!password.matches(passwordRegex)) {
+        boolean passwordValid = password.matches(passwordRegex);
+        System.out.println("Password matches regex: " + passwordValid);
+
+        if (!passwordValid) {
             request.setAttribute("error", "Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        // set user type by email
+        // Assign user type based on email domain
         String userType = email.endsWith("@collegestudent.com") ? "Student" : "Admin";
 
-        
         User newUser = new User(0, username, password, email, firstName, lastName, null, null, null, userType);
 
-     
         boolean success = userService.registerUser(newUser);
 
         if (success) {
-            
+            System.out.println("Registration successful for user: " + username);
             request.getSession().setAttribute("user", newUser);
             if ("Student".equalsIgnoreCase(userType)) {
-                response.sendRedirect("dashboard.jsp");
+                response.sendRedirect(request.getContextPath() + "/dashboard.jsp");
             } else {
-                response.sendRedirect("admin_dashboard.jsp");
+                response.sendRedirect(request.getContextPath() + "/admin_dashboard.jsp");
             }
         } else {
-          
+            System.out.println("Registration failed for user: " + username);
             request.setAttribute("error", "Registration failed! Username or email might already exist.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
     }
-    
-    private void handleUpdateUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    try {
-        int userId = Integer.parseInt(request.getParameter("userId"));
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String email = request.getParameter("email");
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        String address = request.getParameter("address");
-        String phoneNumber = request.getParameter("phoneNumber");
-        Date dateOfBirth = null;
 
-        try {
-            String dob = request.getParameter("dateOfBirth");
-            if (dob != null && !dob.isEmpty()) {
-                dateOfBirth = java.sql.Date.valueOf(dob);
-            }
-        } catch (IllegalArgumentException e) {
-            request.setAttribute("error", "Invalid date format");
-            request.getRequestDispatcher("profile.jsp").forward(request, response);
-            return;
-        }
-
-        User user = new User(userId, username, password, email, firstName, lastName, address, phoneNumber, dateOfBirth, null);
-
-        boolean success = userService.updateUser(user);
-
-        if (success) {
-            
-            request.getSession().setAttribute("user", user);
-            System.out.println("User updated successfully: " + user);
-            response.sendRedirect("profile.jsp");
-        } else {
-           
-            request.setAttribute("error", "Update failed. Please try again.");
-            System.out.println("Update failed for user: " + user);
-            request.getRequestDispatcher("profile.jsp").forward(request, response);
-        }
-    } catch (Exception e) {
-        System.out.println("Error occurred while updating user: " + e.getMessage());
-        e.printStackTrace();
-        request.setAttribute("error", "An error occurred. Please try again.");
-        request.getRequestDispatcher("profile.jsp").forward(request, response);
+    private void handleLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        request.getSession().invalidate();
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
     }
-}
-
 }

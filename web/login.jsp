@@ -69,7 +69,7 @@
             <!-- Dynamic display of error messages -->
             <div id="error-banner" class="alert"></div>
 
-            <form id="login-form" action="/EnrollmentSystem/user" method="post">
+				<form id="login-form" action="<%= request.getContextPath() %>/user" method="post">
                 <input type="hidden" name="action" value="login">
                 <div class="form-group">
                     <label for="username" class="sr-only">Username</label>

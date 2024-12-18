@@ -1,3 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,6 +22,13 @@
             border-radius: 10px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
+        .profile-picture img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
         .form-group label {
             font-weight: bold;
         }
@@ -39,51 +48,53 @@
     <!-- Profile Page Content -->
     <div class="container profile-container">
         <h1 class="text-center">Your Profile</h1>
+        <% 
+            model.User user = (model.User) session.getAttribute("user");
+            String username = user != null ? user.getUsername() : "";
+            String email = user != null ? user.getEmail() : "";
+            String fullName = user != null ? user.getFirstName() + " " + user.getLastName() : "";
+        %>
+        <div class="text-center profile-picture">
+            <img src="profile-picture.png" alt="Profile Picture">
+            <input type="file" class="form-control mt-2" id="profilePicture" name="profilePicture" accept="image/*">
+        </div>
 
-        <!-- Display Error or Success Messages -->
-        <c:if test="${not empty error}">
-            <div class="alert alert-danger">${error}</div>
-        </c:if>
-        <c:if test="${not empty success}">
-            <div class="alert alert-success">${success}</div>
-        </c:if>
+        <form id="profile-form" action="user" method="post">
+            <input type="hidden" name="action" value="updatePassword" />
 
-        <!-- Profile Update Form -->
-        <form id="profile-form" action="user?action=update" method="post">
-            <input type="hidden" name="userId" value="${user.userId}">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" class="form-control" value="${user.username}" required>
+                <input type="text" id="username" name="username" class="form-control" value="<%= username %>" readonly>
             </div>
+
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" class="form-control" value="${user.email}" required>
+                <input type="email" id="email" name="email" class="form-control" value="<%= email %>" readonly>
             </div>
+
             <div class="form-group">
-                <label for="firstName">First Name</label>
-                <input type="text" id="firstName" name="firstName" class="form-control" value="${user.firstName}" required>
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" class="form-control" value="<%= fullName %>" readonly>
             </div>
+
+            <!-- Password Update Section -->
+            <div class="form-group mt-4">
+                <label for="currentPassword">Current Password</label>
+                <input type="password" id="currentPassword" name="currentPassword" class="form-control" placeholder="Enter Current Password" required>
+            </div>
+
             <div class="form-group">
-                <label for="lastName">Last Name</label>
-                <input type="text" id="lastName" name="lastName" class="form-control" value="${user.lastName}" required>
+                <label for="newPassword">New Password</label>
+                <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="Enter New Password" required>
             </div>
+
             <div class="form-group">
-                <label for="address">Address</label>
-                <input type="text" id="address" name="address" class="form-control" value="${user.address}">
+                <label for="confirmNewPassword">Confirm New Password</label>
+                <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-control" placeholder="Confirm New Password" required>
             </div>
-            <div class="form-group">
-                <label for="phoneNumber">Phone Number</label>
-                <input type="text" id="phoneNumber" name="phoneNumber" class="form-control" value="${user.phoneNumber}">
-            </div>
-            <div class="form-group">
-                <label for="dateOfBirth">Date of Birth</label>
-                <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${user.dateOfBirth}">
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-control" value="${user.password}" required>
-            </div>
-            <button type="submit" class="btn btn-primary mt-3">Update Profile</button>
+
+            <button type="submit" class="btn btn-primary mt-3">Update Password</button>
+            <button type="reset" class="btn btn-secondary">Cancel</button>
         </form>
     </div>
     

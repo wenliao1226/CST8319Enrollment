@@ -17,7 +17,11 @@ import java.util.Date;
 
 @WebServlet("/notification")
 public class NotificationServlet extends HttpServlet {
-    private NotificationService notificationService = new NotificationService();
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private NotificationService notificationService = new NotificationService();
 
 @Override
 protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

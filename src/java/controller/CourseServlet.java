@@ -1,114 +1,158 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package controller;
 
 import model.Course;
+import model.Program;
 import service.CourseService;
+import service.ProgramService;
 import com.google.gson.Gson;
+
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
-import javax.servlet.annotation.WebServlet;
 
 @WebServlet("/course")
 public class CourseServlet extends HttpServlet {
-    private CourseService courseService = new CourseService();
+    private static final long serialVersionUID = 1L;
+    private final CourseService courseService = new CourseService();
+    private final ProgramService programService = new ProgramService();
+    private final Gson gson = new Gson();
 
-@Override
-protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String action = request.getParameter("action");
-    String message = null;
-    String messageType = null;
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+        String action = request.getParameter("action");
 
-    try {
-        if ("add".equals(action)) {
-            // 添加课程逻辑
-            int courseId = Integer.parseInt(request.getParameter("courseId"));
-            String courseName = request.getParameter("courseName");
-            int programId = Integer.parseInt(request.getParameter("programId"));
-            int capacity = Integer.parseInt(request.getParameter("capacity"));
-            String instructor = request.getParameter("instructor");
-            String location = request.getParameter("location");
+        try {
+            if ("add".equalsIgnoreCase(action)) {
+                // Adding a Course
+                String courseName = request.getParameter("courseName");
+                String programIDStr = request.getParameter("programID");
+                String creditsStr = request.getParameter("credits");
+                String capacityStr = request.getParameter("capacity");
+                String instructor = request.getParameter("instructor");
+                String schedule = request.getParameter("schedule");
+                String location = request.getParameter("location");
+                String description = request.getParameter("description");
 
-            Course course = new Course(courseId, courseName, programId, capacity, instructor, "", location, "");
-            boolean success = courseService.addCourse(course);
+                int programID = (programIDStr != null && !programIDStr.isEmpty()) ? Integer.parseInt(programIDStr) : 0;
+                int credits = (creditsStr != null && !creditsStr.isEmpty()) ? Integer.parseInt(creditsStr) : 0;
+                int capacity = (capacityStr != null && !capacityStr.isEmpty()) ? Integer.parseInt(capacityStr) : 0;
 
-            if (success) {
-                message = "Course added successfully.";
-                messageType = "success";
+                Course course = new Course();
+                course.setName(courseName);
+                course.setProgramId(programID);
+                course.setCredits(credits);
+                course.setCapacity(capacity);
+                course.setInstructor(instructor);
+                course.setSchedule(schedule);
+                course.setLocation(location);
+                course.setDescription(description);
+
+                int newCourseID = courseService.addCourse(course);
+                if (newCourseID > 0) {
+                    response.sendRedirect("admin_dashboard.jsp?message=Course+successfully+added");
+                } else {
+                    response.sendRedirect("admin_dashboard.jsp?message=Failed+to+add+course");
+                }
+
+            } else if ("delete".equalsIgnoreCase(action)) {
+                // Deleting a Course
+                String courseIDStr = request.getParameter("courseID");
+                if (courseIDStr != null && !courseIDStr.isEmpty()) {
+                    int courseID = Integer.parseInt(courseIDStr);
+                    boolean success = courseService.deleteCourse(courseID);
+                    if (success) {
+                        response.sendRedirect("admin_dashboard.jsp?message=Course+deleted+successfully");
+                    } else {
+                        response.sendRedirect("admin_dashboard.jsp?message=Failed+to+delete+course");
+                    }
+                } else {
+                    response.sendRedirect("admin_dashboard.jsp?message=No+courseID+provided+for+deletion");
+                }
+
+            } else if ("update".equalsIgnoreCase(action)) {
+                // Updating a Course
+                String courseIDStr = request.getParameter("courseID");
+                String courseName = request.getParameter("courseName");
+                String capacityStr = request.getParameter("capacity");
+
+                if (courseIDStr != null && !courseIDStr.isEmpty()) {
+                    int courseID = Integer.parseInt(courseIDStr);
+                    int capacity = (capacityStr != null && !capacityStr.isEmpty()) ? Integer.parseInt(capacityStr) : 0;
+
+                    Course existingCourse = courseService.getCourseById(courseID);
+                    if (existingCourse != null) {
+                        existingCourse.setName(courseName);
+                        existingCourse.setCapacity(capacity);
+
+                        boolean success = courseService.updateCourse(existingCourse);
+                        if (success) {
+                            response.sendRedirect("admin_dashboard.jsp?message=Course+updated+successfully");
+                        } else {
+                            response.sendRedirect("admin_dashboard.jsp?message=Failed+to+update+course");
+                        }
+                    } else {
+                        response.sendRedirect("admin_dashboard.jsp?message=Course+not+found");
+                    }
+                } else {
+                    response.sendRedirect("admin_dashboard.jsp?message=No+courseID+provided+for+update");
+                }
+
+            } else if ("addProgram".equalsIgnoreCase(action)) {
+                // Adding a Program
+                String programName = request.getParameter("programName");
+                Program program = new Program();
+                program.setName(programName);
+
+                boolean success = programService.addProgram(program);
+                if (success) {
+                    response.sendRedirect("admin_dashboard.jsp?message=Program+added+successfully");
+                } else {
+                    response.sendRedirect("admin_dashboard.jsp?message=Failed+to+add+program");
+                }
+
             } else {
-                message = "Failed to add course.";
-                messageType = "error";
+                response.sendRedirect("admin_dashboard.jsp?message=Invalid+action");
             }
-
-        } else if ("update".equals(action)) {
-            // 更新课程逻辑
-            int courseId = Integer.parseInt(request.getParameter("courseId")); // 新的 Course ID
-            String courseName = request.getParameter("courseName");
-            int programId = Integer.parseInt(request.getParameter("programId"));
-            int capacity = Integer.parseInt(request.getParameter("capacity"));
-            String instructor = request.getParameter("instructor");
-            String location = request.getParameter("location");
-
-            Course course = new Course(courseId, courseName, programId, capacity, instructor, "", location, "");
-            boolean success = courseService.updateCourse(course);
-
-            if (success) {
-                message = "Course updated successfully.";
-                messageType = "success";
-            } else {
-                message = "Failed to update course.";
-                messageType = "error";
-            }
-
-        } else if ("delete".equals(action)) {
-            // 删除课程逻辑
-            int courseId = Integer.parseInt(request.getParameter("courseId"));
-            boolean success = courseService.deleteCourse(courseId);
-
-            if (success) {
-                message = "Course deleted successfully.";
-                messageType = "success";
-            } else {
-                message = "Failed to delete course.";
-                messageType = "error";
-            }
-        } else {
-            message = "Invalid action.";
-            messageType = "error";
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("admin_dashboard.jsp?message=An+error+occurred:" + e.getMessage());
         }
-    } catch (NumberFormatException e) {
-        message = "Invalid input.";
-        messageType = "error";
-    } catch (Exception e) {
-        message = "An unexpected error occurred: " + e.getMessage();
-        messageType = "error";
-        e.printStackTrace();
     }
-
-    // 设置消息并转发请求
-    if (message != null) {
-        request.setAttribute("message", message);
-        request.setAttribute("messageType", messageType);
-    }
-
-    request.getRequestDispatcher("/admin_dashboard.jsp").forward(request, response);
-}
-
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Course> courses = courseService.getAllCourses(); 
+        String action = request.getParameter("action");
+        
+        try {
+            if ("search".equalsIgnoreCase(action)) {
+                String courseName = request.getParameter("courseName");
+                String courseID = request.getParameter("courseID");
+                String programID = request.getParameter("programID");
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+                List<Course> courses = courseService.searchCourses(
+                    (courseName != null && !courseName.isEmpty()) ? courseName : null,
+                    (courseID != null && !courseID.isEmpty()) ? courseID : null,
+                    (programID != null && !programID.isEmpty()) ? programID : null
+                );
 
-        response.getWriter().write(new Gson().toJson(courses));
+                request.setAttribute("courses", courses);
+                request.getRequestDispatcher("dashboard.jsp").forward(request, response);
+
+            } else if ("list".equalsIgnoreCase(action) || action == null) {
+                // Default: Fetch all courses
+                List<Course> courses = courseService.getAllCourses();
+                request.setAttribute("courses", courses);
+                request.getRequestDispatcher("admin_dashboard.jsp").forward(request, response);
+
+            } else {
+                response.sendRedirect("dashboard.jsp?message=Invalid+GET+action");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("dashboard.jsp?message=An+error+occurred:" + e.getMessage());
+        }
     }
 }
-

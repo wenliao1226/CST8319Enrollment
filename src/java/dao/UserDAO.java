@@ -19,13 +19,13 @@ public class UserDAO {
             statement.setString(4, user.getFirstName());
             statement.setString(5, user.getLastName());
             statement.setString(6, user.getType());
-            return statement.executeUpdate() > 0;
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
-
 
     public User authenticateUser(String username, String password) {
         String sql = "SELECT * FROM user WHERE Username = ? AND Password = ?";
@@ -42,30 +42,44 @@ public class UserDAO {
         }
         return null;
     }
-    
-    public boolean updateUser(User user) {
-    String sql = "UPDATE user SET Username = ?, Password = ?, Email = ?, First_Name = ?, Last_Name = ?, Address = ?, Phone_Number = ?, Date_of_Birth = ? WHERE User_ID = ?";
-    try (Connection connection = DatabaseConnection.getConnection();
-         PreparedStatement statement = connection.prepareStatement(sql)) {
-        statement.setString(1, user.getUsername());
-        statement.setString(2, user.getPassword());
-        statement.setString(3, user.getEmail());
-        statement.setString(4, user.getFirstName());
-        statement.setString(5, user.getLastName());
-        statement.setString(6, user.getAddress());
-        statement.setString(7, user.getPhoneNumber());
-        statement.setDate(8, user.getDateOfBirth() != null ? new java.sql.Date(user.getDateOfBirth().getTime()) : null);
-        statement.setInt(9, user.getUserId());
-        int rowsUpdated = statement.executeUpdate();
-        System.out.println("Rows updated: " + rowsUpdated);
-        return rowsUpdated > 0;
-    } catch (SQLException e) {
-        System.out.println("SQL error during user update: " + e.getMessage());
-        e.printStackTrace();
-    }
-    return false;
-}
 
+    public boolean updateUser(int userId, String currentPassword, String newPassword, String firstName, String lastName, String email) {
+        String validateSql = "SELECT Password FROM user WHERE User_ID = ?";
+        String updateSql = "UPDATE user SET Password = ?, First_Name = ?, Last_Name = ?, Email = ? WHERE User_ID = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement validateStmt = connection.prepareStatement(validateSql);
+             PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
+
+            // Step 1: Validate current password
+            validateStmt.setInt(1, userId);
+            ResultSet resultSet = validateStmt.executeQuery();
+            if (resultSet.next()) {
+                String storedPassword = resultSet.getString("Password");
+                if (!storedPassword.equals(currentPassword)) {
+                    System.out.println("Current password does not match.");
+                    return false; // Password validation failed
+                }
+            } else {
+                System.out.println("User not found.");
+                return false; // User does not exist
+            }
+
+            // Step 2: Update user details (including password)
+            updateStmt.setString(1, newPassword);
+            updateStmt.setString(2, firstName);
+            updateStmt.setString(3, lastName);
+            updateStmt.setString(4, email);
+            updateStmt.setInt(5, userId);
+
+            int rowsAffected = updateStmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
@@ -98,20 +112,27 @@ public class UserDAO {
     }
 
     private User mapUser(ResultSet resultSet) throws SQLException {
-    return new User(
-            resultSet.getInt("User_ID"),
-            resultSet.getString("Username"),
-            resultSet.getString("Password"),
-            resultSet.getString("Email"),
-            resultSet.getString("First_Name"),
-            resultSet.getString("Last_Name"),
-            null, null, null,
-            resultSet.getString("Type")
-    );
-}
-
-    public boolean deleteUser(int userId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return new User(
+                resultSet.getInt("User_ID"),
+                resultSet.getString("Username"),
+                resultSet.getString("Password"),
+                resultSet.getString("Email"),
+                resultSet.getString("First_Name"),
+                resultSet.getString("Last_Name"),
+                null, null, null,
+                resultSet.getString("Type")
+        );
     }
 
+    public boolean deleteUser(int userId) {
+        String sql = "DELETE FROM user WHERE User_ID = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, userId);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

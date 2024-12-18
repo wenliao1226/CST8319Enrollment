@@ -4,24 +4,48 @@ import dao.CourseDAO;
 import model.Course;
 
 public class CourseDAOTest {
+
     public static void main(String[] args) {
+        CourseDAOTest tester = new CourseDAOTest();
+
+        tester.testAddCourse();
+        tester.testDeleteCourse();
+    }
+
+    public void testAddCourse() {
+        CourseDAO courseDAO = new CourseDAO();
+        Course course = new Course(0, "Test Course", 1, 4, 30, "Prof. John", "MWF 10-11", "Room 101", "Testing add method");
+
+        int generatedCourseId = courseDAO.addCourse(course);
+        if (generatedCourseId != -1) {
+            System.out.println("Test Add Course: PASSED (Generated Course ID: " + generatedCourseId + ")");
+        } else {
+            System.out.println("Test Add Course: FAILED");
+        }
+    }
+
+    public void testDeleteCourse() {
         CourseDAO courseDAO = new CourseDAO();
 
-        // Test adding a course
-        Course course = new Course(0, "Math 101", 1, 3, 30, "Dr. Smith", "MWF 10-11", "Room 101", "Basic math course");
-        boolean addCourseResult = courseDAO.addCourse(course);
-        System.out.println("Add course result: " + addCourseResult);
+        // Insert a course and get its ID
+        Course course = new Course(0, "Test Course to Delete", 1, 3, 20, "Prof. Delete", "MWF 11-12", "Room 104", "Test Deletion");
+        int generatedCourseId = courseDAO.addCourse(course);
 
-        // Test getting all courses
-        System.out.println("All courses: ");
-        courseDAO.getAllCourses().forEach(System.out::println);
+        if (generatedCourseId == -1) {
+            System.out.println("Test Delete Course: FAILED (Course not added)");
+            return;
+        }
 
-        // Test getting a course by ID
-        Course courseById = courseDAO.getCourseById(1); // Replace with an existing Course_ID
-        System.out.println("Course by ID: " + courseById);
+        // Use the generated ID for deletion
+        boolean result = courseDAO.deleteCourse(generatedCourseId);
+        System.out.println("Test Delete Course: " + (result ? "PASSED" : "FAILED"));
 
-        // Test deleting a course
-        boolean deleteCourseResult = courseDAO.deleteCourse(1); // Replace with an existing Course_ID
-        System.out.println("Delete course result: " + deleteCourseResult);
+        // Verify the course has been deleted
+        Course deletedCourse = courseDAO.getCourseById(generatedCourseId);
+        if (deletedCourse == null) {
+            System.out.println("Verification: Course successfully deleted.");
+        } else {
+            System.out.println("Verification: Course still exists.");
+        }
     }
 }

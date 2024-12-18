@@ -71,41 +71,43 @@
             <!-- Error Banner -->
             <div id="error-banner" class="error-banner"></div>
 
-            <form id="register-form" action="/EnrollmentSystem/user" method="post">
-                <input type="hidden" name="action" value="register">
+			<form id="register-form" action="<%= request.getContextPath() %>/user" method="post">
+    <input type="hidden" name="action" value="register">
 
-                <div class="form-group">
-                    <label for="first-name" class="sr-only">First Name</label>
-                    <input type="text" class="form-control" id="first-name" name="first-name" placeholder="First Name" required>
-                </div>
+    <div class="form-group">
+        <label for="first-name" class="sr-only">First Name</label>
+        <input type="text" class="form-control" id="first-name" name="first-name" placeholder="First Name" required>
+    </div>
 
-                <div class="form-group">
-                    <label for="last-name" class="sr-only">Last Name</label>
-                    <input type="text" class="form-control" id="last-name" name="last-name" placeholder="Last Name" required>
-                </div>
+    <div class="form-group">
+        <label for="last-name" class="sr-only">Last Name</label>
+        <input type="text" class="form-control" id="last-name" name="last-name" placeholder="Last Name" required>
+    </div>
 
-                <div class="form-group">
-                    <label for="username" class="sr-only">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
-                </div>
+    <div class="form-group">
+        <label for="username" class="sr-only">Username</label>
+        <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+    </div>
 
-                <div class="form-group">
-                    <label for="email" class="sr-only">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
-                </div>
+    <div class="form-group">
+        <label for="email" class="sr-only">Email</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+    </div>
 
-                <div class="form-group">
-                    <label for="password" class="sr-only">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-                </div>
+    <div class="form-group">
+        <label for="password" class="sr-only">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+        <small class="form-text text-muted">Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character.</small>
+    </div>
 
-                <div class="form-group">
-                    <label for="confirm-password" class="sr-only">Confirm Password</label>
-                    <input type="password" class="form-control" id="confirm-password" name="confirm-password" placeholder="Confirm Password" required>
-                </div>
+    <div class="form-group">
+        <label for="confirm-password" class="sr-only">Confirm Password</label>
+        <input type="password" class="form-control" id="confirm-password" name="confirm-password" placeholder="Confirm Password" required>
+    </div>
 
-                <button type="submit" class="btn btn-primary mt-4">Sign Up</button>
-            </form>
+    <button type="submit" class="btn btn-primary mt-4">Sign Up</button>
+</form>
+				
             <p class="login-link mt-3">Already have an account? <a href="login.jsp">Login here</a></p>
         </div>
     </div>
@@ -126,22 +128,13 @@
         }
 
         document.getElementById('register-form').addEventListener('submit', function(event) {
-            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
-
-            // Email validation
-            const validDomains = ["@collegestudent.com", "@collegeadmin.com"];
-            if (!validDomains.some(domain => email.endsWith(domain))) {
-                const errorBanner = document.getElementById('error-banner');
-                errorBanner.textContent = 'Email must end with @collegestudent.com or @collegeadmin.com.';
-                errorBanner.classList.add('active');
-                event.preventDefault();
-                return;
-            }
-
-            // Password validation
             const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+            console.log("Password entered:", password);
+            console.log("Password regex match:", passwordRegex.test(password));
+
             if (!passwordRegex.test(password)) {
                 const errorBanner = document.getElementById('error-banner');
                 errorBanner.textContent = 'Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.';
@@ -150,7 +143,6 @@
                 return;
             }
 
-            // Confirm password validation
             if (password !== confirmPassword) {
                 const errorBanner = document.getElementById('error-banner');
                 errorBanner.textContent = 'Passwords do not match.';
@@ -158,6 +150,7 @@
                 event.preventDefault();
             }
         });
+
     </script>
 
 </body>

@@ -18,7 +18,7 @@ public class EnrollmentDAO {
 
             statement.setInt(1, enrollment.getStudentId());
             statement.setInt(2, enrollment.getCourseId());
-            statement.setDate(3, new java.sql.Date(enrollment.getEnrollmentDate().getTime()));
+            statement.setDate(3, Date.valueOf(enrollment.getEnrollmentDate())); // Convert LocalDate to java.sql.Date
             statement.setString(4, enrollment.getStatus());
 
             return statement.executeUpdate() > 0;
@@ -77,7 +77,7 @@ public class EnrollmentDAO {
                 resultSet.getInt("Enrollment_ID"),
                 resultSet.getInt("Student_ID"),
                 resultSet.getInt("Course_ID"),
-                resultSet.getDate("Enrollment_Date"),
+                resultSet.getDate("Enrollment_Date").toLocalDate(), // Convert java.sql.Date to LocalDate
                 resultSet.getString("Status")
         );
     }

@@ -1,83 +1,66 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Course {
-    private int courseId;          // Course_ID
-    private String courseName;     // Course_Name
-    private int programId;         // programId;
-    private int credits;           // Credits
-    private int capacity;          // Capacity
-    private String instructor;     // Instructor
-    private String schedule;       // Schedule
-    private String location;       // Location
-    private String description;    // Description
-    private String program; 
+    // Primary key field
+    private int courseID;
 
-    public Course() {}
-    
-    public Course(int courseId, String courseName, int programId, int capacity, String instructor, String schedule, String location, String description) {
-    this.courseId = courseId;
-    this.courseName = courseName;
-    this.programId = programId;
-    this.capacity = capacity;
-    this.instructor = instructor;
-    this.schedule = schedule;
-    this.location = location;
-    this.description = description;
-}
+    @SerializedName("courseName")
+    private String name;
 
+    private int programId;
+    private int credits;
+    private int capacity;
+    private String instructor;
+    private String schedule;
+    private String location;
+    private String description;
 
-public Course(int courseId, String courseName, int programId, int credits, int capacity, String instructor, String schedule, String location, String description, String program) {
-    this.courseId = courseId;
-    this.courseName = courseName;
-    this.programId = programId;
-    this.credits = credits;
-    this.capacity = capacity;
-    this.instructor = instructor; // 确保 instructor 是 String
-    this.schedule = schedule;
-    this.location = location;
-    this.description = description;
-    this.program = program;
-}
+    // Field referenced in toString() and getters/setters but not previously declared
+    private String action;
 
-
-
-    public Course(int courseId, String courseName, int programId, int credits, int capacity, String instructor, String schedule, String location, String description) {
-        this(courseId, courseName, programId, credits, capacity, instructor, schedule, location, description, null);
+    // No-argument constructor (required if you want to use new Course() with no params)
+    public Course() {
     }
 
-public Course(int courseId, String courseName, int programId, int capacity, String instructor, String schedule, String location, String description, String program) {
-    this.courseId = courseId;
-    this.courseName = courseName;
-    this.programId = programId;
-    this.capacity = capacity;
-    this.instructor = instructor;
-    this.schedule = schedule;
-    this.location = location;
-    this.description = description;
-    this.program = program; 
-}
-
-
-
-
-    public int getCourseId() {
-        return courseId;
+    // Parameterized constructor
+    public Course(int courseID, String name, int programId, int credits, int capacity,
+                  String instructor, String schedule, String location, String description) {
+        this.courseID = courseID;
+        this.name = name;
+        this.programId = programId;
+        this.credits = credits;
+        this.capacity = capacity;
+        this.instructor = instructor;
+        this.schedule = schedule;
+        this.location = location;
+        this.description = description;
     }
 
-    public void setCourseId(int courseId) {
-        this.courseId = courseId;
+    // For compatibility: getId()/setId() map to courseID
+    public int getId() {
+        return courseID;
     }
 
-    public String getCourseName() {
-        return courseName;
+    public void setId(int id) {
+        this.courseID = id;
     }
 
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
+    public int getCourseID() {
+        return courseID;
+    }
+
+    public void setCourseID(int courseID) {
+        this.courseID = courseID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getProgramId() {
@@ -135,21 +118,28 @@ public Course(int courseId, String courseName, int programId, int capacity, Stri
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    public String getProgram() {
-        return program;
+
+    public String getAction() {
+        return action;
     }
 
-    public void setProgram(String program) {
-        this.program = program;
+    public void setAction(String action) {
+        this.action = action;
     }
 
     @Override
     public String toString() {
         return "Course{" +
-                "courseId=" + courseId +
-                ", courseName='" + courseName + '\'' +
-                ", program='" + program + '\'' +
+                "courseID=" + courseID +
+                ", name='" + name + '\'' +
+                ", programId=" + programId +
+                ", credits=" + credits +
+                ", capacity=" + capacity +
+                ", instructor='" + instructor + '\'' +
+                ", schedule='" + schedule + '\'' +
+                ", location='" + location + '\'' +
+                ", description='" + description + '\'' +
+                ", action='" + action + '\'' +
                 '}';
     }
 }
